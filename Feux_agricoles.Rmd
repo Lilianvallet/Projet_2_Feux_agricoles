@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 2.  Setup global options
 
-```{r, include}
+```{r, include=FALSE}
 options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
 ```
 
@@ -25,4 +25,11 @@ library(xlsx)
 library(data.table)
 library(janitor)
 library(lubridate)
+```
+
+4.  Get data
+
+```{r}
+feux_agri<-read.xlsx2(file = "data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheetName = "feux agricoles")
+feux_agri<-as_tibble(feux_agri)
 ```
