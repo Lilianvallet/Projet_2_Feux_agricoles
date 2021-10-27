@@ -85,3 +85,28 @@ feux_agri%>%
 feux_agri%>% 
   mutate(date = make_datetime(annee, mois, jour))->feux_agri
 ```
+
+# Data exploration
+
+```{r}
+feux_agri%>%
+  group_by(mois,jour)%>%
+  count%>%
+  mutate(mois=as.factor(mois))%>%
+  ggplot()+
+  aes(x = jour,y=n,color=mois)+
+  geom_line()
+feux_agri%>%
+  group_by(date)%>%
+  count%>%
+  ggplot()+
+  aes(x=date,y=n)+
+  geom_line()
+feux_agri%>%
+  group_by(code_commune)%>%
+  count%>%
+  arrange(desc(n))%>%
+  ggplot()+
+  aes(x = code_commune,y=n)+
+  geom_line()
+```
