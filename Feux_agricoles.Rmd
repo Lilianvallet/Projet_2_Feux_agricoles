@@ -33,7 +33,7 @@ library(lubridate)
 feux_agri<-read.xlsx2(file = "data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheetName = "feux agricoles")
 ```
 
-# Data Cleaning and Tydying
+# Data Cleaning and Tidying
 
 1.  Data Cleaning
 
@@ -42,4 +42,46 @@ feux_agri<-as_tibble(feux_agri)
 feux_agri%>%
   filter(!mois=="")%>%
   select(!rmq&!`X..1`)->feux_agri
+```
+
+2.  Data Tidying
+
+```{r}
+clean_names(feux_agri)->feux_agri
+feux_agri%>%
+  rename(code_commune=x)->feux_agri
+feux_agri%>%
+  mutate(annee=as.integer(annee),
+         mois=as.integer(mois),
+         jour=as.integer(jour),
+         code_commune=as.integer(code_commune),
+         commune=as.character(commune),
+         surface_ha=as.numeric(surface_ha),
+         type_vegetation=as.factor(type_vegetation),
+         source=as.factor(source))->feux_agri
+
+# feux_agri%>%
+#   filter(surface_ha=="na")%>%
+#   count->na1
+# test%>%
+#   filter(is.na(surface_ha))%>%
+#   count->na2
+# na1==na2
+# 
+# seqna1<-which(feux_agri$surface_ha=="na")
+# seqna2<-which(is.na(test$surface_ha))
+# tabcomp<-cbind(seqna1,seqna2)
+# tabcomp<-as_tibble(tabcomp)
+# tabcomp%>%
+#   mutate(diff=(seqna1-seqna2))->tabcomp
+# tabcomp%>%
+#   filter(diff!=0)
+
+#370,1397,3225
+feux_agri%>%
+  slice(c(1:369,371:1396,1398:3224,3226:nrow(feux_agri)))%>%
+  na.omit(code_commune)-> feux_agri
+
+feux_agri%>% 
+  mutate(date = make_datetime(annee, mois, jour))->feux_agri
 ```
