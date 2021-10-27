@@ -1,7 +1,11 @@
 ---
-title: "Feux_agricoles"
+title: "Feux agricoles et pastoraux"
 output: html_document
 ---
+
+# Initialization
+
+1.  Setup layout parameters
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
