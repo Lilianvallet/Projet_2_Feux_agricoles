@@ -10,3 +10,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+2.  Setup global options
+
+```{r, include}
+options(java.parameters = "- Xmx1024m")
+```
