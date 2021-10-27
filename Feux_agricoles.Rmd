@@ -31,5 +31,15 @@ library(lubridate)
 
 ```{r}
 feux_agri<-read.xlsx2(file = "data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheetName = "feux agricoles")
+```
+
+# Data Cleaning and Tydying
+
+1.  Data Cleaning
+
+```{r}
 feux_agri<-as_tibble(feux_agri)
+feux_agri%>%
+  filter(!mois=="")%>%
+  select(!rmq&!`X..1`)->feux_agri
 ```
