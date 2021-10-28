@@ -91,12 +91,16 @@ feux_agri%>%
 feux_agri%>% 
   mutate(date = make_datetime(annee, mois, jour))->feux_agri
 
+
+
+commune_gps%>%
+  mutate(code_insee=as.integer(code_insee))->commune_gps
 ```
 
 Data merging
 
 ```{r}
-left_join(feux_agri,commune_gps,by=c(""))
+feux_main<-left_join(feux_agri,commune_gps,by=c("code_commune"="code_insee"))
 ```
 
 # Data exploration
