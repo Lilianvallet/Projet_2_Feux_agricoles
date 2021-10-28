@@ -46,6 +46,8 @@ commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 
 1.  Data Cleaning
 
+-   Agricultural fire data
+
 ```{r}
 feux_agri<-as_tibble(feux_agri)
 feux_agri%>%
@@ -53,9 +55,18 @@ feux_agri%>%
   select(!rmq&!`...10`)->feux_agri
 ```
 
+-   Pastoral fire data
+
+```{r}
+feux_pasto<-as_tibble(feux_pasto)
+feux_pasto%>%
+  filter(!mois=="")%>%
+  select(!rmq&!`...10`)->feux_pasto
+```
+
 2.  Data Tidying
 
--   Agricol fire data
+-   Agricultural fire data
 
 ```{r}
 clean_names(feux_agri)->feux_agri
@@ -98,7 +109,7 @@ feux_agri%>%
 
 ```
 
--   Commune gps data
+-   Commune GPS data
 
 ```{r}
 commune_gps%>%
