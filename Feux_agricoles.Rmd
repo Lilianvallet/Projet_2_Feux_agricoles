@@ -54,6 +54,8 @@ feux_agri%>%
 
 2.  Data Tidying
 
+-   Agricol fire data
+
 ```{r}
 clean_names(feux_agri)->feux_agri
 feux_agri%>%
@@ -93,8 +95,11 @@ feux_agri%>%
 feux_agri%>% 
   mutate(date = make_datetime(annee, mois, jour))->feux_agri
 
+```
 
+-   Commune gps data
 
+```{r}
 commune_gps%>%
   mutate(code_insee=as.integer(code_insee),
          longitude=as.numeric(longitude))%>%
