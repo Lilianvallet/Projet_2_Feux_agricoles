@@ -26,7 +26,7 @@ library(data.table) # Extension of `data.frame`
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(lubridate) # Make Dealing with Dates a Little Easier
 library(annotater) # Annotate Package Load Calls, [github::luisDVA/annotater] v0.1.3
-
+library(sf)
 
 
 
@@ -94,13 +94,26 @@ feux_agri%>%
 
 
 commune_gps%>%
-  mutate(code_insee=as.integer(code_insee))->commune_gps
+  mutate(code_insee=as.integer(code_insee),
+         longitude=as.numeric(longitude))%>%
+  na.omit(longitude)->commune_gps
 ```
 
-Data merging
+3.  Data merging
 
 ```{r}
 feux_main<-left_join(feux_agri,commune_gps,by=c("code_commune"="code_insee"))
+feux_main%>%
+  na.omit(latitude)->feux_main
+
+```
+
+4.  Creating other format files
+
+```{r}
+feux_sf<-st_as_sf(feux_main,
+               coords = c("longitude","latitude"),
+               crs="+proj=longlat +datum=WGS84 +nodefs")
 ```
 
 # Data exploration
