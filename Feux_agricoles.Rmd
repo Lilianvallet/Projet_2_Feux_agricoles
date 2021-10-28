@@ -149,8 +149,14 @@ feux_agri%>%
 tmap_mode("view")
 tm_shape(feux_sf)+
   tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
-          title="Burned area (ha)",alpha=0.8,n=8,scale=2)
+          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->Burned_area_bubbles
 
 tm_shape(feux_sf)+
   tm_bubbles(size = "surface_ha",col = "red",scale = 1)
+```
+
+# Export data
+
+```{r}
+tmap_save(Burned_area_bubbles, filename = "output_data/Burned_area_bubbles.html")
 ```
