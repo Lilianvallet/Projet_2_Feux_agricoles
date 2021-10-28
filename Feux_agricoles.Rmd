@@ -38,6 +38,7 @@ library(leaflet)
 
 ```{r}
 feux_agri<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
+feux_pasto<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
 commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 ```
 
