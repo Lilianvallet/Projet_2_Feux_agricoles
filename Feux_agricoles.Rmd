@@ -19,12 +19,13 @@ options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
 
 3.  Load required packages
 
-```{r}
-library(tidyverse)
-library(xlsx)
-library(data.table)
-library(janitor)
-library(lubridate)
+```{r, message=FALSE}
+library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(xlsx) # Read, Write, Format Excel 2007 and Excel 97/2000/XP/2003 Files
+library(data.table) # Extension of `data.frame`
+library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(lubridate) # Make Dealing with Dates a Little Easier
+
 ```
 
 4.  Get data
