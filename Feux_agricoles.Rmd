@@ -14,24 +14,29 @@ knitr::opts_chunk$set(echo = TRUE)
 2.  Setup global options
 
 ```{r, include=FALSE}
-options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
+#options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
 ```
 
 3.  Load required packages
 
 ```{r, message=FALSE}
 library(tidyverse) # Easily Install and Load the 'Tidyverse'
-library(xlsx) # Read, Write, Format Excel 2007 and Excel 97/2000/XP/2003 Files
+library(readxl) # Read Excel Files, CRAN v1.3.1 
 library(data.table) # Extension of `data.frame`
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(lubridate) # Make Dealing with Dates a Little Easier
+library(annotater) # Annotate Package Load Calls, [github::luisDVA/annotater] v0.1.3
+
+
+
 
 ```
 
 4.  Get data
 
 ```{r}
-feux_agri<-read.xlsx2(file = "data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheetName = "feux agricoles")
+feux_agri<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
+commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 ```
 
 # Data Cleaning and Tidying
@@ -85,6 +90,13 @@ feux_agri%>%
 
 feux_agri%>% 
   mutate(date = make_datetime(annee, mois, jour))->feux_agri
+
+```
+
+Data merging
+
+```{r}
+left_join(feux_agri,commune_gps,by=c(""))
 ```
 
 # Data exploration
