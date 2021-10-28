@@ -47,7 +47,7 @@ commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 feux_agri<-as_tibble(feux_agri)
 feux_agri%>%
   filter(!mois=="")%>%
-  select(!rmq&!`X..1`)->feux_agri
+  select(!rmq&!`...10`)->feux_agri
 ```
 
 2.  Data Tidying
@@ -55,7 +55,7 @@ feux_agri%>%
 ```{r}
 clean_names(feux_agri)->feux_agri
 feux_agri%>%
-  rename(code_commune=x)->feux_agri
+  rename(code_commune=`x4`)->feux_agri
 feux_agri%>%
   mutate(annee=as.integer(annee),
          mois=as.integer(mois),
