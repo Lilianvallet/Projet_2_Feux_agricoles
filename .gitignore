@@ -1,3 +1,7 @@
+#Unwanted commited files
+communes_gps_tidying.R
+data/commune_gps.csv
+
 # History files
 .Rhistory
 .Rapp.history
