@@ -1,6 +1,8 @@
 ---
 title: "Feux agricoles et pastoraux"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Initialization
@@ -29,16 +31,13 @@ library(annotater) # Annotate Package Load Calls, [github::luisDVA/annotater] v0
 library(sf)
 library(tmap)
 library(leaflet)
-
-
-
 ```
 
 4.  Get data
 
 ```{r}
-feux_agri<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
-feux_pasto<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
+agri_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
+pasto_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
 commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 ```
 
@@ -49,19 +48,19 @@ commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 -   Agricultural fire data
 
 ```{r}
-feux_agri<-as_tibble(feux_agri)
-feux_agri%>%
+agri_fire<-as_tibble(agri_fire)
+agri_fire%>%
   filter(!mois=="")%>%
-  select(!rmq&!`...10`)->feux_agri
+  select(!rmq&!`...10`)->agri_fire
 ```
 
 -   Pastoral fire data
 
 ```{r}
-feux_pasto<-as_tibble(feux_pasto)
-feux_pasto%>%
+pasto_fire<-as_tibble(pasto_fire)
+pasto_fire%>%
   filter(!mois=="")%>%
-  select(!rmq&!`...10`)->feux_pasto
+  select(!rmq&!`...10`)->pasto_fire
 ```
 
 2.  Data Tidying
@@ -69,10 +68,10 @@ feux_pasto%>%
 -   Agricultural fire data
 
 ```{r}
-clean_names(feux_agri)->feux_agri
-feux_agri%>%
-  rename(code_commune=`x4`)->feux_agri
-feux_agri%>%
+clean_names(agri_fire)->agri_fire
+agri_fire%>%
+  rename(code_commune=`x4`)->agri_fire
+agri_fire%>%
   mutate(annee=as.integer(annee),
          mois=as.integer(mois),
          jour=as.integer(jour),
@@ -80,9 +79,9 @@ feux_agri%>%
          commune=as.character(commune),
          surface_ha=as.numeric(surface_ha),
          type_vegetation=as.factor(type_vegetation),
-         source=as.factor(source))->feux_agri
+         source=as.factor(source))->agri_fire
 
-# feux_agri%>%
+# agri_fire%>%
 #   filter(surface_ha=="na")%>%
 #   count->na1
 # test%>%
@@ -90,7 +89,7 @@ feux_agri%>%
 #   count->na2
 # na1==na2
 # 
-# seqna1<-which(feux_agri$surface_ha=="na")
+# seqna1<-which(agri_fire$surface_ha=="na")
 # seqna2<-which(is.na(test$surface_ha))
 # tabcomp<-cbind(seqna1,seqna2)
 # tabcomp<-as_tibble(tabcomp)
@@ -100,12 +99,12 @@ feux_agri%>%
 #   filter(diff!=0)
 
 #370,1397,3225
-feux_agri%>%
-  slice(c(1:369,371:1396,1398:3224,3226:nrow(feux_agri)))%>%
-  na.omit(code_commune)-> feux_agri
+agri_fire%>%
+  slice(c(1:369,371:1396,1398:3224,3226:nrow(agri_fire)))%>%
+  na.omit(code_commune)-> agri_fire
 
-feux_agri%>% 
-  mutate(date = make_datetime(annee, mois, jour))->feux_agri
+agri_fire%>% 
+  mutate(date = make_datetime(annee, mois, jour))->agri_fire
 
 ```
 
@@ -121,16 +120,16 @@ commune_gps%>%
 3.  Data merging
 
 ```{r}
-feux_main<-left_join(feux_agri,commune_gps,by=c("code_commune"="code_insee"))
-feux_main%>%
-  na.omit(latitude)->feux_main
+fire<-left_join(agri_fire,commune_gps,by=c("code_commune"="code_insee"))
+fire%>%
+  na.omit(latitude)->fire
 
 ```
 
 4.  Creating other format files
 
 ```{r}
-feux_sf<-st_as_sf(feux_main,
+fire_sf<-st_as_sf(fire,
                coords = c("longitude","latitude"),
                crs="+proj=longlat +datum=WGS84 +nodefs")
 ```
@@ -138,20 +137,20 @@ feux_sf<-st_as_sf(feux_main,
 # Data exploration
 
 ```{r}
-feux_agri%>%
+agri_fire%>%
   group_by(mois,jour)%>%
   count%>%
   mutate(mois=as.factor(mois))%>%
   ggplot()+
   aes(x = jour,y=n,color=mois)+
   geom_line()
-feux_agri%>%
+agri_fire%>%
   group_by(date)%>%
   count%>%
   ggplot()+
   aes(x=date,y=n)+
   geom_line()
-feux_agri%>%
+agri_fire%>%
   group_by(code_commune)%>%
   count%>%
   arrange(desc(n))%>%
@@ -164,11 +163,11 @@ feux_agri%>%
 
 ```{r}
 tmap_mode("view")
-tm_shape(feux_sf)+
+tm_shape(fire_sf)+
   tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
           title="Burned area (ha)",alpha=0.8,n=8,scale=2)->Burned_area_bubbles
 print(Burned_area_bubbles)
-tm_shape(feux_sf)+
+tm_shape(fire_sf)+
   tm_bubbles(size = "surface_ha",col = "red",scale = 1)
 ```
 
