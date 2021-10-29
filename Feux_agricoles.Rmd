@@ -211,14 +211,8 @@ agri_fire%>%
 
 ```{r}
 tmap_mode("view")
-fire_sf%>%
-  filter(groups=="agri_fire")%>%
-tm_shape()+
-  tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
-          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->BA_agri_bubble
-print(BA_agri_bubble)
-tm_shape(fire_sf)+
-  tm_bubbles(size = "surface_ha",col = "red",scale = 1)
+bubble.map("agri_fire")->BA_agri_bubble
+bubble.map("pasto_fire")->BA_pasto_bubble
 
 tmap_mode("plot")
 osm_fire_sf<-read_osm(fire_sf,ext=1.1)
@@ -243,11 +237,23 @@ print(BA_Facet)
 
 ```{r}
 tmap_save(BA_agri_bubble, filename = "output_data/BA_agri_bubble.html")
+tmap_save(BA_pasto_bubble, filename = "output_data/BA_pasto_bubble.html")
 tmap_save(BA_Facet, filename = "output_data/BA_facet_facet.png")
+
 ```
 
 # Function created
 
 ```{r}
-
+bubble.map<-function(group_type="agri_fire"){
+  tmap_mode("view")
+fire_sf%>%
+  filter(groups==group_type)%>%
+tm_shape()+
+  tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
+          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->BA_agri_bubble
+print(BA_agri_bubble)
+tm_shape(fire_sf)+
+  tm_bubbles(size = "surface_ha",col = "red",scale = 1)
+}
 ```
