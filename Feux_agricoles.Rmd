@@ -52,6 +52,7 @@ agri_fire<-as_tibble(agri_fire)
 agri_fire%>%
   filter(!mois=="")%>%
   select(!rmq&!`...10`)->agri_fire
+
 ```
 
 -   Pastoral fire data
@@ -71,11 +72,16 @@ pasto_fire%>%
 clean_names(agri_fire)->agri_fire
 agri_fire%>%
   rename(code_commune=`x4`)->agri_fire
+
+agri_fire%>%
+  slice(c(1:369,371:1396,1398:nrow(agri_fire)))%>%
+  na.omit(code_commune)-> agri_fire
+
 agri_fire%>%
   mutate(annee=as.integer(annee),
          mois=as.integer(mois),
          jour=as.integer(jour),
-         code_commune=as.integer(code_commune),
+         code_commune=as.character(code_commune),
          commune=as.character(commune),
          surface_ha=as.numeric(surface_ha),
          type_vegetation=as.factor(type_vegetation),
@@ -99,20 +105,60 @@ agri_fire%>%
 #   filter(diff!=0)
 
 #370,1397,3225
-agri_fire%>%
-  slice(c(1:369,371:1396,1398:3224,3226:nrow(agri_fire)))%>%
-  na.omit(code_commune)-> agri_fire
 
 agri_fire%>% 
   mutate(date = make_datetime(annee, mois, jour))->agri_fire
 
 ```
 
+-   Pastoral fire data
+
+```{r}
+clean_names(pasto_fire)->pasto_fire
+pasto_fire%>%
+  select(annee:source)->pasto_fire
+
+pasto_fire%>% 
+  slice(c(1:61,64:76,78:817,819:821,823:945,947:nrow(pasto_fire)))-> pasto_fire
+
+pasto_fire%>%
+  mutate(annee=as.integer(annee),
+         mois=as.integer(mois),
+         jour=as.integer(jour),
+         code_commune=as.character(code_commune),
+         commune=as.character(commune),
+         surface_ha=as.numeric(surface_ha),
+         type_vegetation=as.factor(type_vegetation),
+         source=as.factor(source))->pasto_fire
+
+# pasto_fire%>%
+#   filter(surface_ha=="na")%>%
+#   count->na1
+# test%>%
+#   filter(is.na(surface_ha))%>%
+#   count->na2
+# na1==na2
+# 
+# seqna1<-which(pasto_fire$surface_ha=="na")
+# seqna2<-which(is.na(test$surface_ha))
+# tabcomp<-cbind(seqna1,seqna2)
+# tabcomp<-as_tibble(tabcomp)
+# tabcomp%>%
+#   mutate(diff=(seqna1-seqna2))->tabcomp
+# tabcomp%>%
+#   filter(diff!=0)
+
+#370,1397,3225
+
+pasto_fire%>% 
+  mutate(date = make_datetime(annee, mois, jour))->pasto_fire
+```
+
 -   Commune GPS data
 
 ```{r}
 commune_gps%>%
-  mutate(code_insee=as.integer(code_insee),
+  mutate(code_insee=as.character(code_insee),
          longitude=as.numeric(longitude))%>%
   na.omit(longitude)->commune_gps
 ```
