@@ -167,6 +167,7 @@ commune_gps%>%
 3.  Data merging
 
 ```{r}
+fire_mix<-bind_rows("agri_fire"=agri_fire,"pasto_fire"=pasto_fire,.id="groups")
 fire<-left_join(fire_mix,commune_gps,by=c("code_commune"="code_insee"))
 fire%>%
   na.omit(latitude)->fire
