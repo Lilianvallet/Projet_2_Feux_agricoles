@@ -245,3 +245,9 @@ print(BA_Facet)
 tmap_save(BA_agri_bubble, filename = "output_data/BA_agri_bubble.html")
 tmap_save(BA_Facet, filename = "output_data/BA_facet_facet.png")
 ```
+
+# Function created
+
+```{r}
+
+```
