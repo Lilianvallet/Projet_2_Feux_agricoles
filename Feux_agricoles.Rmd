@@ -38,7 +38,7 @@ library(leaflet)
 ```{r}
 agri_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
 pasto_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
-commune_gps<-read_delim("data/commune_gps_tidied.csv",delim = ";")
+commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 ```
 
 # Data Cleaning and Tidying
@@ -161,7 +161,7 @@ commune_gps%>%
   mutate(code_insee=as.character(code_insee),
          longitude=as.numeric(longitude))%>%
   na.omit(longitude)%>%
-  distinct(code_insee)->commune_gps
+  distinct(code_insee,.keep_all=T)->commune_gps
 ```
 
 3.  Data merging
