@@ -160,16 +160,16 @@ pasto_fire%>%
 commune_gps%>%
   mutate(code_insee=as.character(code_insee),
          longitude=as.numeric(longitude))%>%
-  na.omit(longitude)->commune_gps
+  na.omit(longitude)%>%
+  distinct(code_insee)->commune_gps
 ```
 
 3.  Data merging
 
 ```{r}
-fire<-left_join(agri_fire,commune_gps,by=c("code_commune"="code_insee"))
+fire<-left_join(fire_mix,commune_gps,by=c("code_commune"="code_insee"))
 fire%>%
   na.omit(latitude)->fire
-
 ```
 
 4.  Creating other format files
