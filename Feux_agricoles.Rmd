@@ -159,10 +159,11 @@ pasto_fire%>%
 
 ```{r}
 commune_gps%>%
-  mutate(code_insee=as.character(code_insee),
-         longitude=as.numeric(longitude))%>%
-  na.omit(longitude)%>%
-  distinct(code_insee,.keep_all=T)->commune_gps
+  mutate(code_insee=as.character(code_insee))->commune_gps
+commune_gps%>%
+  separate(geo_point_2d,c("lat","lon"),sep=",")%>%
+  mutate(lon=as.numeric(lon),
+         lat=as.numeric(lat))->commune_gps
 ```
 
 3.  Data merging
@@ -171,14 +172,16 @@ commune_gps%>%
 fire_mix<-bind_rows("agri_fire"=agri_fire,"pasto_fire"=pasto_fire,.id="groups")
 fire<-left_join(fire_mix,commune_gps,by=c("code_commune"="code_insee"))
 fire%>%
-  na.omit(latitude)->fire
+  filter(is.na(lat))
+fire%>%
+  na.omit(lat)->fire
 ```
 
 4.  Creating other format files
 
 ```{r}
 fire_sf<-st_as_sf(fire,
-               coords = c("longitude","latitude"),
+               coords = c("lon","lat"),
                crs="+proj=longlat +datum=WGS84 +nodefs")
 ```
 
