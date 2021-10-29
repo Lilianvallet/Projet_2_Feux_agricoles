@@ -4,7 +4,7 @@ data/adresses-france.csv
 data/toutes_communes_cog_2021.csv
 data/code-insee.csv
 data/contour_commune_2021/
-
+report/
 # History files
 .Rhistory
 .Rapp.history
