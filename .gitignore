@@ -1,6 +1,7 @@
 #Unwanted commited files
 communes_gps_tidying.R
-data/commune_gps.csv
+data/adresses-france.csv
+data/toutes_communes_cog_2021.csv
 
 # History files
 .Rhistory
