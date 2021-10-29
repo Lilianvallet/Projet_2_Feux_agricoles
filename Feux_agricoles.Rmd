@@ -38,7 +38,7 @@ library(leaflet)
 ```{r}
 agri_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
 pasto_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
-commune_gps<-read_csv2("data/commune_gps_tidied.csv")
+commune_gps<-read_delim("data/commune_gps_tidied.csv",delim = ";")
 ```
 
 # Data Cleaning and Tidying
