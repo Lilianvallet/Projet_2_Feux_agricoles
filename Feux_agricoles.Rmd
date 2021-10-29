@@ -31,6 +31,7 @@ library(annotater) # Annotate Package Load Calls, [github::luisDVA/annotater] v0
 library(sf)
 library(tmap)
 library(leaflet)
+library(tmaptools)
 ```
 
 4.  Get data
@@ -210,16 +211,37 @@ agri_fire%>%
 
 ```{r}
 tmap_mode("view")
-tm_shape(fire_sf)+
+fire_sf%>%
+  filter(groups=="agri_fire")%>%
+tm_shape()+
   tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
-          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->Burned_area_bubbles
-print(Burned_area_bubbles)
+          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->BA_agri_bubble
+print(BA_agri_bubble)
 tm_shape(fire_sf)+
   tm_bubbles(size = "surface_ha",col = "red",scale = 1)
+
+tmap_mode("plot")
+osm_fire_sf<-read_osm(fire_sf,ext=1.1)
+tm_shape(osm_fire_sf)+
+  tm_rgb()+
+tm_shape(fire_sf)+
+tm_tiles("OpenStreetMap")+
+    tm_dots(col="groups",
+          title="Burned area (ha)",
+          palette=c("#2ca25f","#2b8cbe"),
+          alpha=0.8,
+          n=8,
+          scale=2,
+          legend.show =F 
+          )+
+  tm_facets(by="groups",free.coords = F)+
+	tm_layout(panel.labels = c("Agricultural fire events", "Pastoral fire events"))->BA_Facet
+print(BA_Facet)
 ```
 
 # Export data
 
 ```{r}
-tmap_save(Burned_area_bubbles, filename = "output_data/Burned_area_bubbles.html")
+tmap_save(BA_agri_bubble, filename = "output_data/BA_agri_bubble.html")
+tmap_save(BA_Facet, filename = "output_data/BA_facet_facet.png")
 ```
