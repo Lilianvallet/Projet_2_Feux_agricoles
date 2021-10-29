@@ -2,6 +2,7 @@
 communes_gps_tidying.R
 data/adresses-france.csv
 data/toutes_communes_cog_2021.csv
+data/code-insee.csv
 
 # History files
 .Rhistory
