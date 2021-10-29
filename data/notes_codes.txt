@@ -13,3 +13,4 @@ JMO - feux pastoraux
 
 GPS 
 Plusieurs points avec "," au lieu de "."
+Code_insee non unique (Métropole)
