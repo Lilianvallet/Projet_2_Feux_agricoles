@@ -216,9 +216,7 @@ commune_gps%>%
 fire_mix<-bind_rows("agri_fire"=agri_fire,"pasto_fire"=pasto_fire,.id="groups")
 fire<-left_join(fire_mix,commune_gps,by=c("code_commune"="code_insee"))
 fire%>%
-  filter(is.na(lat))
-fire%>%
-  na.omit(lat)->fire
+  filter(!is.na(lat))->fire
 ```
 
 4.  Creating other format files
@@ -245,9 +243,9 @@ fire%>%
   scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
   theme_bw()->NbFire_Date_density
 fire%>%
-  group_by(groups,annee,mois,jour)%>%
+  group_by(groups,annee,mois)%>%
   count()%>%
-  group_by(groups,mois,jour)%>%
+  group_by(groups,mois)%>%
   summarise(mean=mean(n))%>%
   ggplot()+
   aes(x=as.factor(mois),fill=groups,color=groups,y=mean)+
