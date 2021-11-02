@@ -235,7 +235,7 @@ fire_sf<-st_as_sf(fire,
 fire%>%
   ggplot()+
   aes(x=date,color=groups,fill=groups)+
-  geom_density(alpha=0.2,adjust=1/6)+
+  geom_density(alpha=0.2,adjust=1/10)+
   xlab("Date")+
   ylab("Number of fire events")+
   labs(color="Type of fire event",fill="Type of fire event")+
