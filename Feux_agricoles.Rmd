@@ -232,26 +232,7 @@ fire_sf<-st_as_sf(fire,
 # Data exploration
 
 ```{r}
-agri_fire%>%
-  group_by(mois,jour)%>%
-  count%>%
-  mutate(mois=as.factor(mois))%>%
-  ggplot()+
-  aes(x = jour,y=n,color=mois)+
-  geom_line()
-agri_fire%>%
-  group_by(date)%>%
-  count%>%
-  ggplot()+
-  aes(x=date,y=n)+
-  geom_line()
-agri_fire%>%
-  group_by(code_commune)%>%
-  count%>%
-  arrange(desc(n))%>%
-  ggplot()+
-  aes(x = code_commune,y=n)+
-  geom_line()
+
 ```
 
 2.  Spatial exploration
