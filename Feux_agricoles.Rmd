@@ -42,6 +42,50 @@ pasto_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xls
 commune_gps<-read_csv2("data/commune_gps_tidied.csv")
 ```
 
+# Function created
+
+```{r}
+bubble.map<-function(group_type="agri_fire"){
+  tmap_mode("view")
+fire_sf%>%
+  filter(groups==group_type)%>%
+tm_shape()+
+  tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
+          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->bubble_map
+print(bubble_map)
+return(bubble_map)
+}
+
+save.map<-function(map_type="bubble",group_type="agri_fire",directory="local"){
+  
+  title<-"BA_"
+  if(map_type=="bubble"){
+    suffix<-".html"
+    title<-paste0(title,"bubble_")
+    if(group_type=="agri_fire"){
+      title<-paste0(title,"agri")}
+    else{
+      title<-paste0(title,"pasto")
+    }
+  }
+  else{
+    suffix<-".png"
+    tmap_mode("plot")
+    title<-paste0(title,"Facet")
+  }
+if(directory=="local"){
+  filename<-paste0("output_data/",title)
+}
+else{
+  filename<-paste0("M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/",title)
+}
+filename<-paste0(filename,suffix)
+
+bubble_map<-eval(parse(text = title))
+tmap_save(bubble_map,filename)
+}
+```
+
 # Data Cleaning and Tidying
 
 1.  Data Cleaning
@@ -248,49 +292,5 @@ for(group_type in c("agri_fire","pasto_fire")){
 tmap_mode("plot")
 for(directory in c("local","mouillot")){
 save.map(map_type = "BA",directory=directory)
-}
-```
-
-# Function created
-
-```{r}
-bubble.map<-function(group_type="agri_fire"){
-  tmap_mode("view")
-fire_sf%>%
-  filter(groups==group_type)%>%
-tm_shape()+
-  tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
-          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->bubble_map
-print(bubble_map)
-return(bubble_map)
-}
-
-save.map<-function(map_type="bubble",group_type="agri_fire",directory="local"){
-  
-  title<-"BA_"
-  if(map_type=="bubble"){
-    suffix<-".html"
-    title<-paste0(title,"bubble_")
-    if(group_type=="agri_fire"){
-      title<-paste0(title,"agri")}
-    else{
-      title<-paste0(title,"pasto")
-    }
-  }
-  else{
-    suffix<-".png"
-    tmap_mode("plot")
-    title<-paste0(title,"Facet")
-  }
-if(directory=="local"){
-  filename<-paste0("output_data/",title)
-}
-else{
-  filename<-paste0("M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/",title)
-}
-filename<-paste0(filename,suffix)
-
-bubble_map<-eval(parse(text = title))
-tmap_save(bubble_map,filename)
 }
 ```
