@@ -231,8 +231,19 @@ fire_sf<-st_as_sf(fire,
 
 # Data exploration
 
-```{r}
+1.  Graphic exploration
 
+```{r}
+fire%>%
+  ggplot()+
+  aes(x=date,color=groups,fill=groups)+
+  geom_density(alpha=0.2,adjust=1/6)+
+  xlab("Date")+
+  ylab("Number of fire events")+
+  labs(color="Type of fire event",fill="Type of fire event")+
+  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  theme_bw()->NbFire_Date_density
 ```
 
 2.  Spatial exploration
