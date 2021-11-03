@@ -298,10 +298,8 @@ fire%>%
 fire%>%
   filter(str_count(type_vegetation))
 level_of_fire<-as.tibble(levels(fire$type_vegetation))
-level_of_fire%>%
+#level_of_fire%>%
     filter(str_detect(value,'chaume')&str_detect(value,'ble'))
-str_count(level_of_fire$value)
-str_split(level_of_fire,"_")
 word_in_fire<-str_extract_all(level_of_fire, "[a-z]+")
 as.tibble(word_in_fire[[1]])%>%
   mutate(value_lump=fct_lump(value,prop=.003,))%>%
