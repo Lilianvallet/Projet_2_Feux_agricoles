@@ -153,7 +153,8 @@ agri_fire%>%
 
 agri_fire%>% 
   mutate(date = make_datetime(annee, mois, jour))->agri_fire
-
+agri_fire%>%
+  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA))-> agri_fire
 ```
 
 -   Pastoral fire data
@@ -197,6 +198,8 @@ pasto_fire%>%
 
 pasto_fire%>% 
   mutate(date = make_datetime(annee, mois, jour))->pasto_fire
+pasto_fire%>%
+  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA))-> pasto_fire
 ```
 
 -   Commune GPS data
