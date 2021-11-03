@@ -257,6 +257,19 @@ fire%>%
   scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
   scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
   theme_bw()->MeanNbFire_Month_barplot
+fire%>%
+  mutate(type_vegetation_lump=fct_lump(type_vegetation,prop=.004,))%>%
+  ggplot()+
+  aes(x=fct_infreq(type_vegetation_lump),color=groups,fill=groups)+
+  geom_bar()+
+  coord_flip()+
+  xlab("Count")+
+  ylab("Vegetation type")+
+  ggtitle("Frequence of each vegetation type")+
+  labs(color="Type of fire event",fill="Type of fire event")+
+  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  theme_bw()->VegetType_Nb_barplot
 ```
 
 2.  Spatial exploration
@@ -292,7 +305,8 @@ ggsave(NbFire_Date_density,filename = "NbFire_Date_density.png",path = "M:/Depar
 ggsave(NbFire_Date_density,filename = "NbFire_Date_density.png",path = "output_data")
 ggsave(MeanNbFire_Month_barplot,filename = "MeanNbFire_Month_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(MeanNbFire_Month_barplot,filename = "MeanNbFire_Month_barplot.png",path = "output_data")
-
+ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "output_data")
 tmap_mode("view")
 for(group_type in c("agri_fire","pasto_fire")){
   for(directory in c("local","mouillot")){
