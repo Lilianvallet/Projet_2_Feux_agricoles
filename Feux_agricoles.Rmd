@@ -32,6 +32,8 @@ library(sf)
 library(tmap)
 library(leaflet)
 library(tmaptools)
+library(snakecase)
+
 ```
 
 4.  Get data
@@ -129,7 +131,7 @@ agri_fire%>%
          code_commune=as.character(code_commune),
          commune=as.character(commune),
          surface_ha=as.numeric(surface_ha),
-         type_vegetation=as.factor(type_vegetation),
+         type_vegetation=as.character(type_vegetation),
          source=as.factor(source))->agri_fire
 
 # agri_fire%>%
@@ -154,7 +156,10 @@ agri_fire%>%
 agri_fire%>% 
   mutate(date = make_datetime(annee, mois, jour))->agri_fire
 agri_fire%>%
-  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA))-> agri_fire
+  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
+                                 type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
+                                 type_vegetation=to_snake_case(type_vegetation),
+         type_vegetation=as.factor(type_vegetation))->agri_fire
 ```
 
 -   Pastoral fire data
@@ -199,7 +204,10 @@ pasto_fire%>%
 pasto_fire%>% 
   mutate(date = make_datetime(annee, mois, jour))->pasto_fire
 pasto_fire%>%
-  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA))-> pasto_fire
+  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
+                                 type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
+                                 type_vegetation=to_snake_case(type_vegetation),
+         type_vegetation=as.factor(type_vegetation))->pasto_fire
 ```
 
 -   Commune GPS data
@@ -266,8 +274,8 @@ fire%>%
   aes(x=fct_infreq(type_vegetation_lump),color=groups,fill=groups)+
   geom_bar()+
   coord_flip()+
-  xlab("Count")+
-  ylab("Vegetation type")+
+  xlab("Vegetation type")+
+  ylab("Count")+
   ggtitle("Frequence of each vegetation type")+
   labs(color="Type of fire event",fill="Type of fire event")+
   scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
@@ -282,7 +290,7 @@ fire%>%
   coord_flip()+
   xlab("City")+
   ylab("Count")+
-  ggtitle("Most affected cities")+
+  ggtitle("Most affected cities, corresponding to 0.1% of data")+
   labs(color="Type of fire event",fill="Type of fire event")+
   scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
   scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
@@ -327,6 +335,7 @@ ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "M:/Dep
 ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "output_data")
 ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "output_data")
+
 tmap_mode("view")
 for(group_type in c("agri_fire","pasto_fire")){
   for(directory in c("local","mouillot")){
