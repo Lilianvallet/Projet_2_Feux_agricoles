@@ -24,6 +24,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, message=FALSE}
 library(tidyverse) # Easily Install and Load the 'Tidyverse'
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(readxl)
+library(lubridate)
 library(annotater) # Annotate Package Load Calls, [github::luisDVA/annotater] v0.1.3
 library(sf) # Simple Features for R
 library(tmap) # Thematic Maps
@@ -309,6 +311,17 @@ as.tibble(word_in_fire[[1]])%>%
   ylab("Count")+
   ggtitle("Frequence of each word among the 402 vegetation type, nb words = 818")+
   theme_bw()->Words_Nb_barplot
+fire%>%
+  mutate(type_vegetation_lump=fct_lump(type_vegetation,prop=.004,))%>%
+  filter(type_vegetation_lump!="Other"&surface_ha<50)%>%
+  ggplot()+
+  aes(x=type_vegetation_lump,y=surface_ha)+
+  geom_boxplot()+
+  coord_flip()+
+  xlab("Vegetation type")+
+  ylab("Burned Area (ha)")+
+  ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
+  theme_bw()->VegetType_Surface_boxplot
 ```
 
 2.  Spatial exploration
@@ -350,6 +363,8 @@ ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "M:/Departements/
 ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "output_data")
 ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "output_data")
+ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "output_data")
 tmap_mode("view")
 for(group_type in c("agri_fire","pasto_fire")){
   for(directory in c("local","mouillot")){
