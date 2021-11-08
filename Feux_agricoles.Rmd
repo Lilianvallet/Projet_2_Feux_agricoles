@@ -328,7 +328,24 @@ fire%>%
   ylab("Burned Area (ha)")+
   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
   theme_bw()->VegetType_Surface_boxplot
-  
+
+fire%>%
+  ggplot()+
+  aes(x=datemj,y=groups,group=groups,color=groups,fill=groups)+
+  geom_density_ridges2()+
+  xlab("Date")+
+  ylab("Number of fire events")+
+  labs(color="Type of fire event",fill="Type of fire event")+
+  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
+  theme_bw()+
+  facet_wrap(~annee,ncol = 1,strip.position = "right")+
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank(),
+  axis.text.y = element_blank(),
+  panel.spacing =  unit(0,"lines")
+)->NbFire.Year_JJMM_density
 ```
 
 2.  Spatial exploration
@@ -385,6 +402,8 @@ ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "M:/Departement
 ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "output_data")
 ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "output_data")
+ggsave(NbFire.Year_JJMM_density,filename = "NbFire.Year_JJMM_density.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(NbFire.Year_JJMM_density,filename = "NbFire.Year_JJMM_density.png",path = "output_data")
 tmap_mode("view")
 for(group_type in c("agri_fire","pasto_fire")){
   for(directory in c("local","mouillot")){
