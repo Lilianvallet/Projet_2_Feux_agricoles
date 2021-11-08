@@ -32,7 +32,7 @@ library(tmap) # Thematic Maps
 library(leaflet) # Create Interactive Web Maps with the JavaScript 'Leaflet'
 library(tmaptools) # Thematic Map Tools
 library(snakecase) # Convert Strings into any Case
-
+library(ggridges)
 
 ```
 
@@ -154,7 +154,10 @@ agri_fire%>%
 #370,1397,3225
 
 agri_fire%>% 
-  mutate(date = make_datetime(annee, mois, jour))->agri_fire
+  mutate(date = make_datetime(annee, mois, jour),
+         datemj=make_date(month = mois,day=jour))->agri_fire
+agri_fire%>%
+  mutate(datemj=str_sub(datemj,-5))->agri_fire
 agri_fire%>%
   mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
                                  type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
@@ -202,7 +205,10 @@ pasto_fire%>%
 #370,1397,3225
 
 pasto_fire%>% 
-  mutate(date = make_datetime(annee, mois, jour))->pasto_fire
+  mutate(date = make_datetime(annee, mois, jour),
+         datemj=make_date(month = mois,day=jour))->pasto_fire
+pasto_fire%>%
+  mutate(datemj=str_sub(datemj,-5))->pasto_fire
 pasto_fire%>%
   mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
                                  type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
@@ -322,6 +328,7 @@ fire%>%
   ylab("Burned Area (ha)")+
   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
   theme_bw()->VegetType_Surface_boxplot
+  
 ```
 
 2.  Spatial exploration
@@ -330,6 +337,18 @@ fire%>%
 tmap_mode("view")
 bubble.map("agri_fire")->BA_bubble_agri
 bubble.map("pasto_fire")->BA_bubble_pasto
+
+# fire%>%
+#   ggplot()+
+#   aes(x=lon,y=lat)+
+#   geom_density_2d_filled()+
+#   facet_wrap(~groups)+
+#     xlab("Vegetation type")+
+#   ylab("Burned Area (ha)")+
+#   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
+#   theme_bw()
+#fire_sf_density<-density(x = fire_sf$code_commune)
+#tm_shape(fire_sf)+
 
 tmap_mode("plot")
 osm_fire_sf<-read_osm(fire_sf,ext=1.1)
@@ -348,6 +367,7 @@ tm_tiles("OpenStreetMap")+
   tm_facets(by="groups",free.coords = F)+
 	tm_layout(panel.labels = c("Agricultural fire events", "Pastoral fire events"))->BA_Facet
 print(BA_Facet)
+
 ```
 
 # Export data
