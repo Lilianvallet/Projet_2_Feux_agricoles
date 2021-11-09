@@ -155,7 +155,7 @@ agri_fire %>%
 
 agri_fire %>%
   mutate(
-    date = make_datetime(annee, mois, jour),
+    date = make_date(annee, mois, jour),
     datemj = make_date(month = mois, day = jour)
   ) -> agri_fire
 agri_fire %>%
@@ -212,7 +212,7 @@ pasto_fire %>%
 
 pasto_fire %>%
   mutate(
-    date = make_datetime(annee, mois, jour),
+    date = make_date(annee, mois, jour),
     datemj = make_date(month = mois, day = jour)
   ) -> pasto_fire
 pasto_fire %>%
