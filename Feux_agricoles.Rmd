@@ -33,6 +33,7 @@ library(leaflet) # Create Interactive Web Maps with the JavaScript 'Leaflet'
 library(tmaptools) # Thematic Map Tools
 library(snakecase) # Convert Strings into any Case
 library(ggridges)
+library(pilot)
 ```
 
 4.  Get data
@@ -264,13 +265,15 @@ fire_sf <- st_as_sf(fire,
 fire %>%
   ggplot() +
   aes(x = date, color = groups, fill = groups) +
-  geom_density(alpha = 0.2, adjust = 1 / 10) +
+  geom_density(alpha = 0.5, adjust = 1 / 10) +
   xlab("Date") +
   ylab("Number of fire events") +
   labs(color = "Type of fire event", fill = "Type of fire event") +
   scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  theme_bw() -> NbFire_Date_density
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot()-> NbFire_Date_density
 fire %>%
   group_by(groups, annee, mois) %>%
   count() %>%
@@ -278,14 +281,16 @@ fire %>%
   summarise(mean = mean(n)) %>%
   ggplot() +
   aes(x = as.factor(mois), fill = groups, color = groups, y = mean) +
-  geom_bar(stat = "identity", alpha = 0.2) +
+  geom_bar(stat = "identity") +
   xlab("Month") +
   ylab("Number of fire events") +
   ggtitle("Mean Number of fire events per month from 2001 to 2021") +
   labs(color = "Type of fire event", fill = "Type of fire event") +
   scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  theme_bw() -> MeanNbFire_Month_barplot
+    theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot()-> MeanNbFire_Month_barplot 
 fire %>%
   mutate(type_vegetation_lump = fct_lump(type_vegetation, prop = .004, )) %>%
   ggplot() +
@@ -298,7 +303,9 @@ fire %>%
   labs(color = "Type of fire event", fill = "Type of fire event") +
   scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  theme_bw() -> VegetType_Nb_barplot
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot() -> VegetType_Nb_barplot
 fire %>%
   mutate(code_commune_lump = fct_lump(code_commune, prop = .001)) %>%
   filter(code_commune_lump != "Other") %>%
@@ -312,7 +319,9 @@ fire %>%
   labs(color = "Type of fire event", fill = "Type of fire event") +
   scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  theme_bw() -> City_Nb_barplot
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot() -> City_Nb_barplot
 fire %>%
   filter(str_count(type_vegetation))
 level_of_fire <- as.tibble(levels(fire$type_vegetation))
@@ -328,7 +337,9 @@ as.tibble(word_in_fire[[1]]) %>%
   xlab("Word inside vegetation type") +
   ylab("Count") +
   ggtitle("Frequence of each word among the 402 vegetation type, nb words = 818") +
-  theme_bw() -> Words_Nb_barplot
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot() -> Words_Nb_barplot
 fire %>%
   mutate(type_vegetation_lump = fct_lump(type_vegetation, prop = .004, )) %>%
   filter(type_vegetation_lump != "Other" & surface_ha < 50) %>%
@@ -339,7 +350,9 @@ fire %>%
   xlab("Vegetation type") +
   ylab("Burned Area (ha)") +
   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha") +
-  theme_bw() -> VegetType_Surface_boxplot
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot() -> VegetType_Surface_boxplot
 
 fire %>%
   ggplot() +
@@ -350,7 +363,9 @@ fire %>%
   labs(color = "Type of fire event", fill = "Type of fire event") +
   scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  theme_bw() +
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_fill_pilot() +
   facet_wrap(~annee, ncol = 1, strip.position = "right") +
   theme(
     strip.background = element_blank(),
@@ -388,7 +403,7 @@ tm_shape(osm_fire_sf) +
   tm_dots(
     col = "groups",
     title = "Burned area (ha)",
-    palette = c("#2ca25f", "#2b8cbe"),
+    palette = pilot_color()[c(1,length(pilot_color()))],
     alpha = 0.8,
     n = 8,
     scale = 2,
