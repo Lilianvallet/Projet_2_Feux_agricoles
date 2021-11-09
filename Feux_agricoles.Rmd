@@ -273,6 +273,11 @@ fire%>%
   inspect_num()%>%
   show_plot()+
   theme_pilot()->Variable_histogram
+fire%>%
+  inspect_cat()%>%
+  show_plot()+
+  theme_pilot()+
+  theme(legend.position="none")->Variable_Frequency_barplot
 fire %>%
   ggplot() +
   aes(x = date, color = groups, fill = groups) +
@@ -427,9 +432,12 @@ print(BA_Facet)
 # Export data
 
 ```{r}
-ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "output_data")
+ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "output_data")
 ggsave(Variable_histogram, filename = "Variable_histogram.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(Variable_histogram, filename = "Variable_histogram.png", path = "output_data")
+ggsave(Variable_Frequency_barplot, filename = "Variable_Frequency_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(Variable_Frequency_barplot, filename = "Variable_Frequency_barplot.png", path = "output_data")
 ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "output_data")
 ggsave(MeanNbFire_Month_barplot, filename = "MeanNbFire_Month_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
