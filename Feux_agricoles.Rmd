@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 2.  Setup global options
 
 ```{r, include=FALSE}
-#options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
+# options(java.parameters = "- Xmx1024m") #Allow to increase memory limit
 ```
 
 3.  Load required packages
@@ -33,58 +33,56 @@ library(leaflet) # Create Interactive Web Maps with the JavaScript 'Leaflet'
 library(tmaptools) # Thematic Map Tools
 library(snakecase) # Convert Strings into any Case
 library(ggridges)
-
 ```
 
 4.  Get data
 
 ```{r}
-agri_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 1)
-pasto_fire<-read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx",sheet = 2)
-commune_gps<-read_csv2("data/commune_gps_tidied.csv")
+agri_fire <- read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx", sheet = 1)
+pasto_fire <- read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx", sheet = 2)
+commune_gps <- read_csv2("data/commune_gps_tidied.csv")
 ```
 
 # Function created
 
 ```{r}
-bubble.map<-function(group_type="agri_fire"){
+bubble.map <- function(group_type = "agri_fire") {
   tmap_mode("view")
-fire_sf%>%
-  filter(groups==group_type)%>%
-tm_shape()+
-  tm_dots(size="surface_ha",col="surface_ha",palette=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'),
-          title="Burned area (ha)",alpha=0.8,n=8,scale=2)->bubble_map
-print(bubble_map)
-return(bubble_map)
+  fire_sf %>%
+    filter(groups == group_type) %>%
+    tm_shape() +
+    tm_dots(
+      size = "surface_ha", col = "surface_ha", palette = c("#ffffcc", "#ffeda0", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#b10026"),
+      title = "Burned area (ha)", alpha = 0.8, n = 8, scale = 2
+    ) -> bubble_map
+  print(bubble_map)
+  return(bubble_map)
 }
 
-save.map<-function(map_type="bubble",group_type="agri_fire",directory="local"){
-  
-  title<-"BA_"
-  if(map_type=="bubble"){
-    suffix<-".html"
-    title<-paste0(title,"bubble_")
-    if(group_type=="agri_fire"){
-      title<-paste0(title,"agri")}
-    else{
-      title<-paste0(title,"pasto")
+save.map <- function(map_type = "bubble", group_type = "agri_fire", directory = "local") {
+  title <- "BA_"
+  if (map_type == "bubble") {
+    suffix <- ".html"
+    title <- paste0(title, "bubble_")
+    if (group_type == "agri_fire") {
+      title <- paste0(title, "agri")
+    } else {
+      title <- paste0(title, "pasto")
     }
-  }
-  else{
-    suffix<-".png"
+  } else {
+    suffix <- ".png"
     tmap_mode("plot")
-    title<-paste0(title,"Facet")
+    title <- paste0(title, "Facet")
   }
-if(directory=="local"){
-  filename<-paste0("output_data/",title)
-}
-else{
-  filename<-paste0("M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/",title)
-}
-filename<-paste0(filename,suffix)
+  if (directory == "local") {
+    filename <- paste0("output_data/", title)
+  } else {
+    filename <- paste0("M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/", title)
+  }
+  filename <- paste0(filename, suffix)
 
-bubble_map<-eval(parse(text = title))
-tmap_save(bubble_map,filename)
+  bubble_map <- eval(parse(text = title))
+  tmap_save(bubble_map, filename)
 }
 ```
 
@@ -95,20 +93,19 @@ tmap_save(bubble_map,filename)
 -   Agricultural fire data
 
 ```{r}
-agri_fire<-as_tibble(agri_fire)
-agri_fire%>%
-  filter(!mois=="")%>%
-  select(!rmq&!`...10`)->agri_fire
-
+agri_fire <- as_tibble(agri_fire)
+agri_fire %>%
+  filter(!mois == "") %>%
+  select(!rmq & !`...10`) -> agri_fire
 ```
 
 -   Pastoral fire data
 
 ```{r}
-pasto_fire<-as_tibble(pasto_fire)
-pasto_fire%>%
-  filter(!mois=="")%>%
-  select(!rmq&!`...10`)->pasto_fire
+pasto_fire <- as_tibble(pasto_fire)
+pasto_fire %>%
+  filter(!mois == "") %>%
+  select(!rmq & !`...10`) -> pasto_fire
 ```
 
 2.  Data Tidying
@@ -116,23 +113,25 @@ pasto_fire%>%
 -   Agricultural fire data
 
 ```{r}
-clean_names(agri_fire)->agri_fire
-agri_fire%>%
-  rename(code_commune=`x4`)->agri_fire
+clean_names(agri_fire) -> agri_fire
+agri_fire %>%
+  rename(code_commune = `x4`) -> agri_fire
 
-agri_fire%>%
-  slice(c(1:369,371:1396,1398:nrow(agri_fire)))%>%
-  na.omit(code_commune)-> agri_fire
+agri_fire %>%
+  slice(c(1:369, 371:1396, 1398:nrow(agri_fire))) %>%
+  na.omit(code_commune) -> agri_fire
 
-agri_fire%>%
-  mutate(annee=as.integer(annee),
-         mois=as.integer(mois),
-         jour=as.integer(jour),
-         code_commune=as.character(code_commune),
-         commune=as.character(commune),
-         surface_ha=as.numeric(surface_ha),
-         type_vegetation=as.character(type_vegetation),
-         source=as.factor(source))->agri_fire
+agri_fire %>%
+  mutate(
+    annee = as.integer(annee),
+    mois = as.integer(mois),
+    jour = as.integer(jour),
+    code_commune = as.character(code_commune),
+    commune = as.character(commune),
+    surface_ha = as.numeric(surface_ha),
+    type_vegetation = as.character(type_vegetation),
+    source = as.factor(source)
+  ) -> agri_fire
 
 # agri_fire%>%
 #   filter(surface_ha=="na")%>%
@@ -141,7 +140,7 @@ agri_fire%>%
 #   filter(is.na(surface_ha))%>%
 #   count->na2
 # na1==na2
-# 
+#
 # seqna1<-which(agri_fire$surface_ha=="na")
 # seqna2<-which(is.na(test$surface_ha))
 # tabcomp<-cbind(seqna1,seqna2)
@@ -151,39 +150,45 @@ agri_fire%>%
 # tabcomp%>%
 #   filter(diff!=0)
 
-#370,1397,3225
+# 370,1397,3225
 
-agri_fire%>% 
-  mutate(date = make_datetime(annee, mois, jour),
-         datemj=make_date(month = mois,day=jour))->agri_fire
-agri_fire%>%
-  mutate(datemj=str_sub(datemj,-5))->agri_fire
-agri_fire%>%
-  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
-                                 type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
-                                 type_vegetation=to_snake_case(type_vegetation),
-         type_vegetation=as.factor(type_vegetation))->agri_fire
+agri_fire %>%
+  mutate(
+    date = make_datetime(annee, mois, jour),
+    datemj = make_date(month = mois, day = jour)
+  ) -> agri_fire
+agri_fire %>%
+  mutate(datemj = str_sub(datemj, -5)) -> agri_fire
+agri_fire %>%
+  mutate(
+    type_vegetation = replace(type_vegetation, type_vegetation == "na", NA),
+    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
+    type_vegetation = to_snake_case(type_vegetation),
+    type_vegetation = as.factor(type_vegetation)
+  ) -> agri_fire
 ```
 
 -   Pastoral fire data
 
 ```{r}
-clean_names(pasto_fire)->pasto_fire
-pasto_fire%>%
-  select(annee:source)->pasto_fire
+clean_names(pasto_fire) -> pasto_fire
+pasto_fire %>%
+  select(annee:source) -> pasto_fire
 
-pasto_fire%>% 
-  slice(c(1:61,64:76,78:817,819:821,823:945,947:nrow(pasto_fire)))-> pasto_fire
+pasto_fire %>%
+  slice(c(1:61, 64:76, 78:817, 819:821, 823:945, 947:nrow(pasto_fire))) -> pasto_fire
 
-pasto_fire%>%
-  mutate(annee=as.integer(annee),
-         mois=as.integer(mois),
-         jour=as.integer(jour),
-         code_commune=as.character(code_commune),
-         commune=as.character(commune),
-         surface_ha=as.numeric(surface_ha),
-         type_vegetation=as.factor(type_vegetation),
-         source=as.factor(source))->pasto_fire
+pasto_fire %>%
+  mutate(
+    annee = as.integer(annee),
+    mois = as.integer(mois),
+    jour = as.integer(jour),
+    code_commune = as.character(code_commune),
+    commune = as.character(commune),
+    surface_ha = as.numeric(surface_ha),
+    type_vegetation = as.factor(type_vegetation),
+    source = as.factor(source)
+  ) -> pasto_fire
 
 # pasto_fire%>%
 #   filter(surface_ha=="na")%>%
@@ -192,7 +197,7 @@ pasto_fire%>%
 #   filter(is.na(surface_ha))%>%
 #   count->na2
 # na1==na2
-# 
+#
 # seqna1<-which(pasto_fire$surface_ha=="na")
 # seqna2<-which(is.na(test$surface_ha))
 # tabcomp<-cbind(seqna1,seqna2)
@@ -202,46 +207,53 @@ pasto_fire%>%
 # tabcomp%>%
 #   filter(diff!=0)
 
-#370,1397,3225
+# 370,1397,3225
 
-pasto_fire%>% 
-  mutate(date = make_datetime(annee, mois, jour),
-         datemj=make_date(month = mois,day=jour))->pasto_fire
-pasto_fire%>%
-  mutate(datemj=str_sub(datemj,-5))->pasto_fire
-pasto_fire%>%
-  mutate(type_vegetation=replace(type_vegetation, type_vegetation=="na",NA),
-                                 type_vegetation=iconv(type_vegetation,from="UTF-8",to="ASCII//TRANSLIT"),
-                                 type_vegetation=to_snake_case(type_vegetation),
-         type_vegetation=as.factor(type_vegetation))->pasto_fire
+pasto_fire %>%
+  mutate(
+    date = make_datetime(annee, mois, jour),
+    datemj = make_date(month = mois, day = jour)
+  ) -> pasto_fire
+pasto_fire %>%
+  mutate(datemj = str_sub(datemj, -5)) -> pasto_fire
+pasto_fire %>%
+  mutate(
+    type_vegetation = replace(type_vegetation, type_vegetation == "na", NA),
+    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
+    type_vegetation = to_snake_case(type_vegetation),
+    type_vegetation = as.factor(type_vegetation)
+  ) -> pasto_fire
 ```
 
 -   Commune GPS data
 
 ```{r}
-commune_gps%>%
-  mutate(code_insee=as.character(code_insee))->commune_gps
-commune_gps%>%
-  separate(geo_point_2d,c("lat","lon"),sep=",")%>%
-  mutate(lon=as.numeric(lon),
-         lat=as.numeric(lat))->commune_gps
+commune_gps %>%
+  mutate(code_insee = as.character(code_insee)) -> commune_gps
+commune_gps %>%
+  separate(geo_point_2d, c("lat", "lon"), sep = ",") %>%
+  mutate(
+    lon = as.numeric(lon),
+    lat = as.numeric(lat)
+  ) -> commune_gps
 ```
 
 3.  Data merging
 
 ```{r}
-fire_mix<-bind_rows("agri_fire"=agri_fire,"pasto_fire"=pasto_fire,.id="groups")
-fire<-left_join(fire_mix,commune_gps,by=c("code_commune"="code_insee"))
-fire%>%
-  filter(!is.na(lat))->fire
+fire_mix <- bind_rows("agri_fire" = agri_fire, "pasto_fire" = pasto_fire, .id = "groups")
+fire <- left_join(fire_mix, commune_gps, by = c("code_commune" = "code_insee"))
+fire %>%
+  filter(!is.na(lat)) -> fire
 ```
 
 4.  Creating other format files
 
 ```{r}
-fire_sf<-st_as_sf(fire,
-               coords = c("lon","lat"),
-               crs="+proj=longlat +datum=WGS84 +nodefs")
+fire_sf <- st_as_sf(fire,
+  coords = c("lon", "lat"),
+  crs = "+proj=longlat +datum=WGS84 +nodefs"
+)
 ```
 
 # Data exploration
@@ -249,111 +261,111 @@ fire_sf<-st_as_sf(fire,
 1.  Graphic exploration
 
 ```{r}
-fire%>%
-  ggplot()+
-  aes(x=date,color=groups,fill=groups)+
-  geom_density(alpha=0.2,adjust=1/10)+
-  xlab("Date")+
-  ylab("Number of fire events")+
-  labs(color="Type of fire event",fill="Type of fire event")+
-  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  theme_bw()->NbFire_Date_density
-fire%>%
-  group_by(groups,annee,mois)%>%
-  count()%>%
-  group_by(groups,mois)%>%
-  summarise(mean=mean(n))%>%
-  ggplot()+
-  aes(x=as.factor(mois),fill=groups,color=groups,y=mean)+
-  geom_bar(stat="identity",alpha=0.2)+
-  xlab("Month")+
-  ylab("Number of fire events")+
-  ggtitle("Mean Number of fire events per month from 2001 to 2021")+
-  labs(color="Type of fire event",fill="Type of fire event")+
-  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  theme_bw()->MeanNbFire_Month_barplot
-fire%>%
-  mutate(type_vegetation_lump=fct_lump(type_vegetation,prop=.004,))%>%
-  ggplot()+
-  aes(x=fct_infreq(type_vegetation_lump),color=groups,fill=groups)+
-  geom_bar()+
-  coord_flip()+
-  xlab("Vegetation type")+
-  ylab("Count")+
-  ggtitle("Frequence of each vegetation type")+
-  labs(color="Type of fire event",fill="Type of fire event")+
-  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  theme_bw()->VegetType_Nb_barplot
-fire%>%
-  mutate(code_commune_lump=fct_lump(code_commune,prop=.001))%>%
-  filter(code_commune_lump!="Other")%>%
-  ggplot()+
-  aes(x=fct_infreq(commune.y),color=groups,fill=groups)+
-  geom_bar()+
-  coord_flip()+
-  xlab("City")+
-  ylab("Count")+
-  ggtitle("Most affected cities, corresponding to 0.1% of data")+
-  labs(color="Type of fire event",fill="Type of fire event")+
-  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  theme_bw()->City_Nb_barplot
-fire%>%
+fire %>%
+  ggplot() +
+  aes(x = date, color = groups, fill = groups) +
+  geom_density(alpha = 0.2, adjust = 1 / 10) +
+  xlab("Date") +
+  ylab("Number of fire events") +
+  labs(color = "Type of fire event", fill = "Type of fire event") +
+  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  theme_bw() -> NbFire_Date_density
+fire %>%
+  group_by(groups, annee, mois) %>%
+  count() %>%
+  group_by(groups, mois) %>%
+  summarise(mean = mean(n)) %>%
+  ggplot() +
+  aes(x = as.factor(mois), fill = groups, color = groups, y = mean) +
+  geom_bar(stat = "identity", alpha = 0.2) +
+  xlab("Month") +
+  ylab("Number of fire events") +
+  ggtitle("Mean Number of fire events per month from 2001 to 2021") +
+  labs(color = "Type of fire event", fill = "Type of fire event") +
+  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  theme_bw() -> MeanNbFire_Month_barplot
+fire %>%
+  mutate(type_vegetation_lump = fct_lump(type_vegetation, prop = .004, )) %>%
+  ggplot() +
+  aes(x = fct_infreq(type_vegetation_lump), color = groups, fill = groups) +
+  geom_bar() +
+  coord_flip() +
+  xlab("Vegetation type") +
+  ylab("Count") +
+  ggtitle("Frequence of each vegetation type") +
+  labs(color = "Type of fire event", fill = "Type of fire event") +
+  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  theme_bw() -> VegetType_Nb_barplot
+fire %>%
+  mutate(code_commune_lump = fct_lump(code_commune, prop = .001)) %>%
+  filter(code_commune_lump != "Other") %>%
+  ggplot() +
+  aes(x = fct_infreq(commune.y), color = groups, fill = groups) +
+  geom_bar() +
+  coord_flip() +
+  xlab("City") +
+  ylab("Count") +
+  ggtitle("Most affected cities, corresponding to 0.1% of data") +
+  labs(color = "Type of fire event", fill = "Type of fire event") +
+  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  theme_bw() -> City_Nb_barplot
+fire %>%
   filter(str_count(type_vegetation))
-level_of_fire<-as.tibble(levels(fire$type_vegetation))
-#level_of_fire%>%
-    filter(str_detect(value,'chaume')&str_detect(value,'ble'))
-word_in_fire<-str_extract_all(level_of_fire, "[a-z]+")
-as.tibble(word_in_fire[[1]])%>%
-  mutate(value_lump=fct_lump(value,prop=.003,))%>%
-  ggplot()+
-  aes(x=fct_infreq(value_lump))+
-  geom_bar()+
-  coord_flip()+
-  xlab("Word inside vegetation type")+
-  ylab("Count")+
-  ggtitle("Frequence of each word among the 402 vegetation type, nb words = 818")+
-  theme_bw()->Words_Nb_barplot
-fire%>%
-  mutate(type_vegetation_lump=fct_lump(type_vegetation,prop=.004,))%>%
-  filter(type_vegetation_lump!="Other"&surface_ha<50)%>%
-  ggplot()+
-  aes(x=type_vegetation_lump,y=surface_ha)+
-  geom_boxplot()+
-  coord_flip()+
-  xlab("Vegetation type")+
-  ylab("Burned Area (ha)")+
-  ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
-  theme_bw()->VegetType_Surface_boxplot
+level_of_fire <- as.tibble(levels(fire$type_vegetation))
+# level_of_fire%>%
+filter(str_detect(value, "chaume") & str_detect(value, "ble"))
+word_in_fire <- str_extract_all(level_of_fire, "[a-z]+")
+as.tibble(word_in_fire[[1]]) %>%
+  mutate(value_lump = fct_lump(value, prop = .003, )) %>%
+  ggplot() +
+  aes(x = fct_infreq(value_lump)) +
+  geom_bar() +
+  coord_flip() +
+  xlab("Word inside vegetation type") +
+  ylab("Count") +
+  ggtitle("Frequence of each word among the 402 vegetation type, nb words = 818") +
+  theme_bw() -> Words_Nb_barplot
+fire %>%
+  mutate(type_vegetation_lump = fct_lump(type_vegetation, prop = .004, )) %>%
+  filter(type_vegetation_lump != "Other" & surface_ha < 50) %>%
+  ggplot() +
+  aes(x = type_vegetation_lump, y = surface_ha) +
+  geom_boxplot() +
+  coord_flip() +
+  xlab("Vegetation type") +
+  ylab("Burned Area (ha)") +
+  ggtitle("Burned Area of most common vegetation type, include only fires<50 ha") +
+  theme_bw() -> VegetType_Surface_boxplot
 
-fire%>%
-  ggplot()+
-  aes(x=datemj,y=groups,group=groups,color=groups,fill=groups)+
-  geom_density_ridges2()+
-  xlab("Date")+
-  ylab("Number of fire events")+
-  labs(color="Type of fire event",fill="Type of fire event")+
-  scale_color_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  scale_fill_hue(labels=c("Agricultural fire","Pastoral fire"))+
-  theme_bw()+
-  facet_wrap(~annee,ncol = 1,strip.position = "right")+
+fire %>%
+  ggplot() +
+  aes(x = datemj, y = groups, group = groups, color = groups, fill = groups) +
+  geom_density_ridges2() +
+  xlab("Date") +
+  ylab("Number of fire events") +
+  labs(color = "Type of fire event", fill = "Type of fire event") +
+  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  theme_bw() +
+  facet_wrap(~annee, ncol = 1, strip.position = "right") +
   theme(
-  strip.background = element_blank(),
-  strip.text.x = element_blank(),
-  axis.text.y = element_blank(),
-  panel.spacing =  unit(0,"lines")
-)->NbFire.Year_JJMM_density
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.spacing = unit(0, "lines")
+  ) -> NbFire.Year_JJMM_density
 ```
 
 2.  Spatial exploration
 
 ```{r}
 tmap_mode("view")
-bubble.map("agri_fire")->BA_bubble_agri
-bubble.map("pasto_fire")->BA_bubble_pasto
+bubble.map("agri_fire") -> BA_bubble_agri
+bubble.map("pasto_fire") -> BA_bubble_pasto
 
 # fire%>%
 #   ggplot()+
@@ -364,54 +376,54 @@ bubble.map("pasto_fire")->BA_bubble_pasto
 #   ylab("Burned Area (ha)")+
 #   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha")+
 #   theme_bw()
-#fire_sf_density<-density(x = fire_sf$code_commune)
-#tm_shape(fire_sf)+
+# fire_sf_density<-density(x = fire_sf$code_commune)
+# tm_shape(fire_sf)+
 
 tmap_mode("plot")
-osm_fire_sf<-read_osm(fire_sf,ext=1.1)
-tm_shape(osm_fire_sf)+
-  tm_rgb()+
-tm_shape(fire_sf)+
-tm_tiles("OpenStreetMap")+
-    tm_dots(col="groups",
-          title="Burned area (ha)",
-          palette=c("#2ca25f","#2b8cbe"),
-          alpha=0.8,
-          n=8,
-          scale=2,
-          legend.show =F 
-          )+
-  tm_facets(by="groups",free.coords = F)+
-	tm_layout(panel.labels = c("Agricultural fire events", "Pastoral fire events"))->BA_Facet
+osm_fire_sf <- read_osm(fire_sf, ext = 1.1)
+tm_shape(osm_fire_sf) +
+  tm_rgb() +
+  tm_shape(fire_sf) +
+  tm_tiles("OpenStreetMap") +
+  tm_dots(
+    col = "groups",
+    title = "Burned area (ha)",
+    palette = c("#2ca25f", "#2b8cbe"),
+    alpha = 0.8,
+    n = 8,
+    scale = 2,
+    legend.show = F
+  ) +
+  tm_facets(by = "groups", free.coords = F) +
+  tm_layout(panel.labels = c("Agricultural fire events", "Pastoral fire events")) -> BA_Facet
 print(BA_Facet)
-
 ```
 
 # Export data
 
 ```{r}
-ggsave(NbFire_Date_density,filename = "NbFire_Date_density.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(NbFire_Date_density,filename = "NbFire_Date_density.png",path = "output_data")
-ggsave(MeanNbFire_Month_barplot,filename = "MeanNbFire_Month_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(MeanNbFire_Month_barplot,filename = "MeanNbFire_Month_barplot.png",path = "output_data")
-ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(VegetType_Nb_barplot,filename = "VegetType_Nb_barplot.png",path = "output_data")
-ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(City_Nb_barplot,filename = "City_Nb_barplot.png",path = "output_data")
-ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(Words_Nb_barplot,filename = "Words_Nb_barplot.png",path = "output_data")
-ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(VegetType_Surface_boxplot,filename = "VegetType_Surface_boxplot.png",path = "output_data")
-ggsave(NbFire.Year_JJMM_density,filename = "NbFire.Year_JJMM_density.png",path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(NbFire.Year_JJMM_density,filename = "NbFire.Year_JJMM_density.png",path = "output_data")
+ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "output_data")
+ggsave(MeanNbFire_Month_barplot, filename = "MeanNbFire_Month_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(MeanNbFire_Month_barplot, filename = "MeanNbFire_Month_barplot.png", path = "output_data")
+ggsave(VegetType_Nb_barplot, filename = "VegetType_Nb_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(VegetType_Nb_barplot, filename = "VegetType_Nb_barplot.png", path = "output_data")
+ggsave(City_Nb_barplot, filename = "City_Nb_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(City_Nb_barplot, filename = "City_Nb_barplot.png", path = "output_data")
+ggsave(Words_Nb_barplot, filename = "Words_Nb_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(Words_Nb_barplot, filename = "Words_Nb_barplot.png", path = "output_data")
+ggsave(VegetType_Surface_boxplot, filename = "VegetType_Surface_boxplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(VegetType_Surface_boxplot, filename = "VegetType_Surface_boxplot.png", path = "output_data")
+ggsave(NbFire.Year_JJMM_density, filename = "NbFire.Year_JJMM_density.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(NbFire.Year_JJMM_density, filename = "NbFire.Year_JJMM_density.png", path = "output_data")
 tmap_mode("view")
-for(group_type in c("agri_fire","pasto_fire")){
-  for(directory in c("local","mouillot")){
-    save.map(map_type = "bubble",group_type = group_type,directory = directory)
-    }
+for (group_type in c("agri_fire", "pasto_fire")) {
+  for (directory in c("local", "mouillot")) {
+    save.map(map_type = "bubble", group_type = group_type, directory = directory)
+  }
 }
 tmap_mode("plot")
-for(directory in c("local","mouillot")){
-save.map(map_type = "BA",directory=directory)
+for (directory in c("local", "mouillot")) {
+  save.map(map_type = "BA", directory = directory)
 }
 ```
