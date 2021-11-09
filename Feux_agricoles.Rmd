@@ -34,6 +34,7 @@ library(tmaptools) # Thematic Map Tools
 library(snakecase) # Convert Strings into any Case
 library(ggridges)
 library(pilot)
+library(ggdist)
 ```
 
 4.  Get data
@@ -345,15 +346,14 @@ fire %>%
   filter(type_vegetation_lump != "Other" & surface_ha < 50) %>%
   ggplot() +
   aes(x = type_vegetation_lump, y = surface_ha) +
-  geom_boxplot() +
+  stat_halfeye() +
   coord_flip() +
   xlab("Vegetation type") +
   ylab("Burned Area (ha)") +
   ggtitle("Burned Area of most common vegetation type, include only fires<50 ha") +
   theme_pilot() +
   scale_color_pilot()+
-  scale_fill_pilot() -> VegetType_Surface_boxplot
-
+  scale_fill_pilot() -> VegetType_Surface_distplot
 fire %>%
   ggplot() +
   aes(x = datemj, y = groups, group = groups, color = groups, fill = groups) +
@@ -427,8 +427,8 @@ ggsave(City_Nb_barplot, filename = "City_Nb_barplot.png", path = "M:/Departement
 ggsave(City_Nb_barplot, filename = "City_Nb_barplot.png", path = "output_data")
 ggsave(Words_Nb_barplot, filename = "Words_Nb_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(Words_Nb_barplot, filename = "Words_Nb_barplot.png", path = "output_data")
-ggsave(VegetType_Surface_boxplot, filename = "VegetType_Surface_boxplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
-ggsave(VegetType_Surface_boxplot, filename = "VegetType_Surface_boxplot.png", path = "output_data")
+ggsave(VegetType_Surface_distplot, filename = "VegetType_Surface_distplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(VegetType_Surface_distplot, filename = "VegetType_Surface_distplot.png", path = "output_data")
 ggsave(NbFire.Year_JJMM_density, filename = "NbFire.Year_JJMM_density.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(NbFire.Year_JJMM_density, filename = "NbFire.Year_JJMM_density.png", path = "output_data")
 tmap_mode("view")
