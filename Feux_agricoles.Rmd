@@ -35,6 +35,7 @@ library(snakecase) # Convert Strings into any Case
 library(ggridges)
 library(pilot)
 library(ggdist)
+library(inspectdf)
 ```
 
 4.  Get data
@@ -263,6 +264,15 @@ fire_sf <- st_as_sf(fire,
 1.  Graphic exploration
 
 ```{r}
+fire%>%
+  inspect_na()%>%
+  show_plot()+
+  theme_pilot()+
+  scale_fill_pilot()->NA_Variable_barplot
+fire%>%
+  inspect_num()%>%
+  show_plot()+
+  theme_pilot()->Variable_histogram
 fire %>%
   ggplot() +
   aes(x = date, color = groups, fill = groups) +
@@ -417,6 +427,9 @@ print(BA_Facet)
 # Export data
 
 ```{r}
+ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "output_data")
+ggsave(Variable_histogram, filename = "Variable_histogram.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
+ggsave(Variable_histogram, filename = "Variable_histogram.png", path = "output_data")
 ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
 ggsave(NbFire_Date_density, filename = "NbFire_Date_density.png", path = "output_data")
 ggsave(MeanNbFire_Month_barplot, filename = "MeanNbFire_Month_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
