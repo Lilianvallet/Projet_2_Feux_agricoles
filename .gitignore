@@ -8,7 +8,7 @@ report/
 # History files
 .Rhistory
 .Rapp.history
-
+Animated_map.R
 # Session Data files
 .RData
 
