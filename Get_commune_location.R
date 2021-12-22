@@ -6,9 +6,9 @@ library(xlsx)
 library(tmap)
 library(tmaptools)
 commune_gps <- read_csv2("data/commune_gps_tidied.csv")
-#exemple<-read_delim("data/liste_incendies_ du_16_12_2021.csv",delim=";",skip=2)
+exemple<-read_delim("data/liste_incendies_ du_16_12_2021.csv",delim=";",skip=2)
 #exemple<-read_csv2("data/feuxmidpyr3.csv")
-exemple<-read_delim("data/feux_aquitaine_GIPATGRI.txt",delim = ";")
+#exemple<-read_delim("data/feux_aquitaine_GIPATGRI.txt",delim = ";")
 
   exemple<-clean_names(exemple)
 commune_gps %>%
@@ -18,12 +18,12 @@ commune_gps %>%
     LAT = as.numeric(LAT)
   ) -> commune_gps
 
-for(i in 1:length(exemple$commun_code_insee))
+for(i in 1:length(exemple$code_insee))
 {
   print(i)
-  if(!is.na(exemple$commun_code_insee[i])){
-    if(str_starts(exemple$commun_code_insee[i],pattern = "0")){
-      exemple$commun_code_insee[i]<-str_sub(exemple$commun_code_insee[i],start=2)
+  if(!is.na(exemple$code_insee[i])){
+    if(str_starts(exemple$code_insee[i],pattern = "0")){
+      exemple$code_insee[i]<-str_sub(exemple$code_insee[i],start=2)
     }
   }
 }
@@ -31,7 +31,7 @@ for(i in 1:length(exemple$commun_code_insee))
 exemple%>%
   mutate(commune=as.character(commune))->exemple
 
-affected_commune <- left_join(exemple, commune_gps, by = c("commune" = "code_insee"))
+affected_commune <- left_join(exemple, commune_gps, by = c("code_insee" = "code_insee"))
 
 affected_commune%>%
   ggplot(aes(x=longitude,y=latitude))+
@@ -65,7 +65,7 @@ tmap_save(map, "Aquitaine_coordinates_comparison.html")
 affected_commune%>%
   filter(is.na(LAT))
 
-write.table(affected_commune,"feuxmidpyr3_located.csv",sep =  ";",fileEncoding = "UTF-8",row.names = F)
+write.table(affected_commune,"liste_incendies_du_16_12_2021_located.csv",sep =  ";",fileEncoding = "UTF-8",row.names = F)
 
 
                
