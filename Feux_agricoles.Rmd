@@ -42,8 +42,8 @@ library(inspectdf)
 4.  Get data
 
 ```{r}
-agri_fire <- read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx", sheet = 1)
-pasto_fire <- read_excel("data/Base-feux-agricoles-pastoraux2001-2021-10092021.xlsx", sheet = 2)
+agri_fire <- read_excel("data/Base feux agricoles 2001-2021-31122021.xlsx", sheet = 1)
+pasto_fire <- read_excel("data/Base feux agricoles 2001-2021-31122021.xlsx", sheet = 2)
 commune_gps <- read_csv2("data/commune_gps_tidied.csv")
 ```
 
@@ -100,7 +100,7 @@ save.map <- function(map_type = "bubble", group_type = "agri_fire", directory = 
 agri_fire <- as_tibble(agri_fire)
 agri_fire %>%
   filter(!mois == "") %>%
-  select(!rmq & !`...10`) -> agri_fire
+  select(année:rmq) -> agri_fire
 ```
 
 -   Pastoral fire data
@@ -109,7 +109,7 @@ agri_fire %>%
 pasto_fire <- as_tibble(pasto_fire)
 pasto_fire %>%
   filter(!mois == "") %>%
-  select(!rmq & !`...10`) -> pasto_fire
+  select(année:rmq) -> pasto_fire
 ```
 
 2.  Data Tidying
@@ -117,14 +117,21 @@ pasto_fire %>%
 -   Agricultural fire data
 
 ```{r}
+# Rename columns
 clean_names(agri_fire) -> agri_fire
 agri_fire %>%
   rename(code_commune = `x4`) -> agri_fire
 
+# Filter miswritten rows or change its value
 agri_fire %>%
-  slice(c(1:369, 371:1396, 1398:nrow(agri_fire))) %>%
-  na.omit(code_commune) -> agri_fire
+  filter(is.na(surface_ha)|!surface_ha==".0°4"&!surface_ha=="1,5")%>%
+  mutate(surface_ha = na_if(surface_ha, "na"),
+         masse_tonne_matiere_seche = na_if(masse_tonne_matiere_seche, "na"),
+         type_vegetation = na_if(type_vegetation, "na"),
+         lieu_de_stockage = recode(lieu_de_stockage, "na" = "not_mentioned"),
+         lieu_de_stockage = na_if(lieu_de_stockage, "NA"))-> agri_fire
 
+# Set class of each column
 agri_fire %>%
   mutate(
     annee = as.integer(annee),
@@ -134,8 +141,26 @@ agri_fire %>%
     commune = as.character(commune),
     surface_ha = as.numeric(surface_ha),
     type_vegetation = as.character(type_vegetation),
-    source = as.factor(source)
+    lieu_de_stockage=as.character(lieu_de_stockage),
+    masse_tonne_matiere_seche = as.numeric(masse_tonne_matiere_seche),
+    source = as.factor(source),
+    rmq =as.character(rmq)
   ) -> agri_fire
+agri_fire %>%
+  mutate(
+    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
+    type_vegetation = to_snake_case(type_vegetation),
+    type_vegetation = as.factor(type_vegetation)
+  ) -> agri_fire
+
+# Create new columns
+agri_fire %>%
+  mutate(
+    date = make_date(annee, mois, jour),
+    datemj = make_date(month = mois, day = jour)
+  ) -> agri_fire
+agri_fire %>%
+  mutate(datemj = str_sub(datemj, -5)) -> agri_fire
 
 # agri_fire%>%
 #   filter(surface_ha=="na")%>%
@@ -155,33 +180,22 @@ agri_fire %>%
 #   filter(diff!=0)
 
 # 370,1397,3225
-
-agri_fire %>%
-  mutate(
-    date = make_date(annee, mois, jour),
-    datemj = make_date(month = mois, day = jour)
-  ) -> agri_fire
-agri_fire %>%
-  mutate(datemj = str_sub(datemj, -5)) -> agri_fire
-agri_fire %>%
-  mutate(
-    type_vegetation = replace(type_vegetation, type_vegetation == "na", NA),
-    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
-    type_vegetation = to_snake_case(type_vegetation),
-    type_vegetation = as.factor(type_vegetation)
-  ) -> agri_fire
 ```
 
 -   Pastoral fire data
 
 ```{r}
+# Rename columns
 clean_names(pasto_fire) -> pasto_fire
-pasto_fire %>%
-  select(annee:source) -> pasto_fire
 
+# Filter miswritten rows or change its value
 pasto_fire %>%
-  slice(c(1:61, 64:76, 78:817, 819:821, 823:945, 947:nrow(pasto_fire))) -> pasto_fire
+  filter(!surface_ha=="> 100" & !surface_ha=="> 101"&!jour=="?"& !jour == "1'")%>%
+  mutate(surface_ha = na_if(surface_ha, "NA"),
+         surface_ha = na_if(surface_ha, "na"),
+         type_vegetation = na_if(type_vegetation, "na")) -> pasto_fire
 
+# Set class of each column
 pasto_fire %>%
   mutate(
     annee = as.integer(annee),
@@ -193,6 +207,21 @@ pasto_fire %>%
     type_vegetation = as.factor(type_vegetation),
     source = as.factor(source)
   ) -> pasto_fire
+pasto_fire %>%
+  mutate(
+    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
+    type_vegetation = to_snake_case(type_vegetation),
+    type_vegetation = as.factor(type_vegetation)
+  ) -> pasto_fire
+
+# Create new columns
+pasto_fire %>%
+  mutate(
+    date = make_date(annee, mois, jour),
+    datemj = make_date(month = mois, day = jour)
+  ) -> pasto_fire
+pasto_fire %>%
+  mutate(datemj = str_sub(datemj, -5)) -> pasto_fire
 
 # pasto_fire%>%
 #   filter(surface_ha=="na")%>%
@@ -212,28 +241,20 @@ pasto_fire %>%
 #   filter(diff!=0)
 
 # 370,1397,3225
-
-pasto_fire %>%
-  mutate(
-    date = make_date(annee, mois, jour),
-    datemj = make_date(month = mois, day = jour)
-  ) -> pasto_fire
-pasto_fire %>%
-  mutate(datemj = str_sub(datemj, -5)) -> pasto_fire
-pasto_fire %>%
-  mutate(
-    type_vegetation = replace(type_vegetation, type_vegetation == "na", NA),
-    type_vegetation = iconv(type_vegetation, from = "UTF-8", to = "ASCII//TRANSLIT"),
-    type_vegetation = to_snake_case(type_vegetation),
-    type_vegetation = as.factor(type_vegetation)
-  ) -> pasto_fire
 ```
 
 -   Commune GPS data
 
 ```{r}
+# Filter miswritten rows or change its value
+commune_gps%>%
+  mutate(code_insee=if_else(str_length(code_insee)==4, paste0(0,code_insee),code_insee))-> commune_gps
+
+# Set class of each column
 commune_gps %>%
   mutate(code_insee = as.character(code_insee)) -> commune_gps
+
+# Create new columns
 commune_gps %>%
   separate(geo_point_2d, c("lat", "lon"), sep = ",") %>%
   mutate(
@@ -249,6 +270,9 @@ fire_mix <- bind_rows("agri_fire" = agri_fire, "pasto_fire" = pasto_fire, .id = 
 fire <- left_join(fire_mix, commune_gps, by = c("code_commune" = "code_insee"))
 fire %>%
   filter(!is.na(lat)) -> fire
+# fire%>%
+# filter(is.na(lat))%>%
+#   count(code_commune)->unavailable_loc
 ```
 
 4.  Creating other format files
@@ -268,8 +292,7 @@ fire_sf <- st_as_sf(fire,
 fire%>%
   inspect_na()%>%
   show_plot()+
-  theme_pilot()+
-  scale_fill_pilot()->NA_Variable_barplot
+  theme_pilot()->NA_Variable_barplot
 fire%>%
   inspect_num()%>%
   show_plot()+
@@ -339,11 +362,10 @@ fire %>%
   theme_pilot() +
   scale_color_pilot()+
   scale_fill_pilot() -> City_Nb_barplot
-fire %>%
-  filter(str_count(type_vegetation))
+
 level_of_fire <- as.tibble(levels(fire$type_vegetation))
 # level_of_fire%>%
-filter(str_detect(value, "chaume") & str_detect(value, "ble"))
+# filter(str_detect(value, "chaume") & str_detect(value, "ble"))
 word_in_fire <- str_extract_all(level_of_fire, "[a-z]+")
 as.tibble(word_in_fire[[1]]) %>%
   mutate(value_lump = fct_lump(value, prop = .003, )) %>%
