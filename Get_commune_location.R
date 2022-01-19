@@ -6,7 +6,7 @@ library(xlsx)
 library(tmap)
 library(tmaptools)
 commune_gps <- read_csv2("data/commune_gps_tidied.csv")
-exemple<-read_delim("data/liste_incendies_ du_16_12_2021.csv",delim=";",skip=2)
+exemple<-read_delim("data/export_BDIFF_incendies_20220111.csv",delim=";",skip=5)
 #exemple<-read_csv2("data/feuxmidpyr3.csv")
 #exemple<-read_delim("data/feux_aquitaine_GIPATGRI.txt",delim = ";")
 
@@ -34,7 +34,7 @@ exemple%>%
 affected_commune <- left_join(exemple, commune_gps, by = c("code_insee" = "code_insee"))
 
 affected_commune%>%
-  ggplot(aes(x=longitude,y=latitude))+
+  ggplot(aes(x=LONG,y=LAT))+
   geom_point( )
 affected_commune%>%
   filter(!is.na(latitude))->data
@@ -65,7 +65,7 @@ tmap_save(map, "Aquitaine_coordinates_comparison.html")
 affected_commune%>%
   filter(is.na(LAT))
 
-write.table(affected_commune,"liste_incendies_du_16_12_2021_located.csv",sep =  ";",fileEncoding = "UTF-8",row.names = F)
+write.table(affected_commune,"export_BDIFF_incendies_20220111_located.csv",sep =  ";",fileEncoding = "UTF-8",row.names = F)
 
 
                
