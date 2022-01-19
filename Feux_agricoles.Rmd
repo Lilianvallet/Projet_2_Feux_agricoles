@@ -36,6 +36,8 @@ library(ggridges)
 library(pilot)
 library(ggdist)
 library(inspectdf)
+library(ggforce)
+
 
 ```
 
@@ -306,14 +308,14 @@ fire %>%
   ggplot() +
   aes(x = date, color = groups, fill = groups) +
   geom_density(alpha = 0.5, adjust = 1 / 10) +
-  xlab("Date") +
-  ylab("Number of fire events") +
-  labs(color = "Type of fire event", fill = "Type of fire event") +
-  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  labs(color = "Type of fire event",
+       fill = "Type of fire event",
+       x = "Year",
+       y = "Number of fire events"
+      ) +
   theme_pilot() +
-  scale_color_pilot()+
-  scale_fill_pilot()-> NbFire_Date_density
+  scale_color_pilot(labels = c("Agricultural fire", "Pastoral fire"))+
+  scale_fill_pilot(labels = c("Agricultural fire", "Pastoral fire"))-> NbFire_Date_density
 fire %>%
   group_by(groups, annee, mois) %>%
   count() %>%
@@ -322,15 +324,14 @@ fire %>%
   ggplot() +
   aes(x = as.factor(mois), fill = groups, color = groups, y = mean) +
   geom_bar(stat = "identity") +
-  xlab("Month") +
-  ylab("Number of fire events") +
   ggtitle("Mean Number of fire events per month from 2001 to 2021") +
-  labs(color = "Type of fire event", fill = "Type of fire event") +
-  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  labs(color = "Type of fire event", 
+       fill = "Type of fire event",
+       x = "Month",
+       y = "Number of fire events") +
     theme_pilot() +
-  scale_color_pilot()+
-  scale_fill_pilot()-> MeanNbFire_Month_barplot 
+  scale_color_pilot(labels = c("Agricultural fire", "Pastoral fire"))+
+  scale_fill_pilot(labels = c("Agricultural fire", "Pastoral fire"))-> MeanNbFire_Month_barplot 
 fire %>%
   mutate(type_vegetation_lump = fct_lump(type_vegetation, prop = .004, )) %>%
   ggplot() +
@@ -341,29 +342,26 @@ fire %>%
   ylab("Count") +
   ggtitle("Frequence of each vegetation type") +
   labs(color = "Type of fire event", fill = "Type of fire event") +
-  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   theme_pilot() +
-  scale_color_pilot()+
-  scale_fill_pilot() -> VegetType_Nb_barplot
+  scale_color_pilot(labels = c("Agricultural fire", "Pastoral fire"))+
+  scale_fill_pilot(labels = c("Agricultural fire", "Pastoral fire")) -> VegetType_Nb_barplot
 fire %>%
-  mutate(code_commune_lump = fct_lump(code_commune, prop = .001)) %>%
+  mutate(code_commune_lump = fct_lump(code_commune, prop = .0009)) %>%
   filter(code_commune_lump != "Other") %>%
   ggplot() +
   aes(x = fct_infreq(commune.y), color = groups, fill = groups) +
   geom_bar() +
   coord_flip() +
-  xlab("City") +
+  xlab("Municipality") +
   ylab("Count") +
-  ggtitle("Most affected cities, corresponding to 0.1% of data") +
-  labs(color = "Type of fire event", fill = "Type of fire event") +
-  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
+  ggtitle("Most affected municipalities over the study period, (corresponding to 0.09% of data)") +
+  labs(color = "Type of fire event", fill = "Type of fire event",
+       x="Number of fire events") +
   theme_pilot() +
-  scale_color_pilot()+
-  scale_fill_pilot() -> City_Nb_barplot
+  scale_color_pilot(labels = c("Agricultural fire", "Pastoral fire"))+
+  scale_fill_pilot(labels = c("Agricultural fire", "Pastoral fire")) -> City_Nb_barplot
 
-level_of_fire <- as.tibble(levels(fire$type_vegetation))
+level_of_fire <- as.tibble(levels(as.factor(fire$type_vegetation)))
 # level_of_fire%>%
 # filter(str_detect(value, "chaume") & str_detect(value, "ble"))
 word_in_fire <- str_extract_all(level_of_fire, "[a-z]+")
@@ -399,18 +397,32 @@ fire %>%
   xlab("Date") +
   ylab("Number of fire events") +
   labs(color = "Type of fire event", fill = "Type of fire event") +
-  scale_color_hue(labels = c("Agricultural fire", "Pastoral fire")) +
-  scale_fill_hue(labels = c("Agricultural fire", "Pastoral fire")) +
   theme_pilot() +
-  scale_color_pilot()+
-  scale_fill_pilot() +
+  scale_color_pilot(labels = c("Agricultural fire", "Pastoral fire"))+
+  scale_fill_pilot(labels = c("Agricultural fire", "Pastoral fire")) +
   facet_wrap(~annee, ncol = 1, strip.position = "right") +
   theme(
     strip.background = element_blank(),
     strip.text.x = element_blank(),
     axis.text.y = element_blank(),
-    panel.spacing = unit(0, "lines")
+    panel.spacing = unit(0, "lines"),
+    axis.text.x=element_blank()
   ) -> NbFire.Year_JJMM_density
+fire%>%
+  mutate(groups=as.numeric(as.factor(groups)))%>%
+  ggplot()+
+  aes(x =groups,
+      y=surface_ha,
+      color = groups) +
+    geom_jitter(alpha = 0.5,
+                width=.2) +
+    labs(title = "Distribution of Burned area ~ type of fire",
+         subtitle = "Dark blue = Agricultural fire, Light blue = Pastoral fire",
+         x = "Fire type",
+         y = "Burned area (ha)") +
+  theme(legend.position = "none",
+        axis.text.x = element_blank())+
+  facet_zoom(ylim = c(0, 200), xlim= c(0.8,2.2),zoom.size = 0.5)-> BA_Group_jitterplot
 ```
 
 2.  Spatial exploration
@@ -450,9 +462,31 @@ tm_shape(osm_fire_sf) +
   tm_facets(by = "groups", free.coords = F) +
   tm_layout(panel.labels = c("Agricultural fire events", "Pastoral fire events")) -> BA_Facet
 print(BA_Facet)
+
+fire_sf%>%
+  ggplot()+
+  aes(color=groups,size=surface_ha)+
+  geom_sf(alpha=0.6)+
+  theme_pilot() +
+  scale_color_pilot()+
+  scale_size_area(max_size = 20)+
+    labs(color = "Type of fire event",
+       size = "Burned area (ha)"
+      )+
+  borders("france")-> BA_Group_bubblemap
+mapview(fire_sf, zcol="groups")
+mapview(fire_sf, cex="surface_ha",)
 ```
 
 # Export data
+
+1.  Export data
+
+```{r}
+write_csv2(fire,"Agricultural-Pastoral_Fire.csv")
+```
+
+2.  Export figures
 
 ```{r}
 ggsave(NA_Variable_barplot, filename = "NA_Variable_barplot.png", path = "M:/Departements/EF/EqFORECAST/mouillot/Feux-agricoles-pastoraux/output-data/")
