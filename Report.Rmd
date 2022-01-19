@@ -1,0 +1,204 @@
+---
+title: "Agricultural and pastoral Fire"
+subtitle: "Data exploration"
+author: "Lilian VALLET"
+date: "This presentation is directly linked to the database by Jean-Marc Ourcival, any modification or additional data would directly update this presentation"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["rutgers", "rutgers-fonts"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(readxl)
+library(lubridate) # Annotate Package Load Calls, [github::luisDVA/annotater] v0.1.3
+library(sf) # Simple Features for R
+library(tmap) # Thematic Maps
+library(leaflet) # Create Interactive Web Maps with the JavaScript 'Leaflet'
+library(tmaptools) # Thematic Map Tools
+library(snakecase) # Convert Strings into any Case
+library(ggridges)
+library(pilot)
+library(ggdist)
+library(inspectdf)
+library(ggforce)
+library(mapview)
+fire<-read_csv2("Agricultural-Pastoral_Fire.csv")
+```
+
+# Global dataset
+
+**`r nrow(fire)`** observations from *`r min(fire$annee)`* to *`r max(fire$annee)`*, with :
+-  **`r fire%>%filter(groups=="agri_fire")%>%nrow`** agricultural fires
+  - `r fire%>%filter(groups=="agri_fire")%>%nrow-(fire%>%filter(groups=="agri_fire"&!is.na(lieu_de_stockage))%>%nrow)` field fires
+  - `r fire%>%filter(groups=="agri_fire"&!is.na(lieu_de_stockage))%>%nrow` building fires
+-  **`r fire%>%filter(groups=="pasto_fire")%>%nrow`** pastoral fires
+
+5 types of variables :
+-  Date (day/month/year)
+-  Municipality of event (Name and INSEE code)
+-  Location of municipality (Latitude and Longitude)
+-  Vegetation type
+-  Data source
+
+Additional variables for agricultural fires :
+-  Burned area *for field fires*
+-  Storage place with estimated Dry mass burned *for building fires*
+
+---
+# Dataset View
+```{r eval=require('DT'), tidy=FALSE, echo = FALSE}
+DT::datatable(
+  head(fire,100),
+  fillContainer = FALSE, options = list(pageLength = 5)
+)
+```
+
+---
+# Spatial view of dataset
+
+
+```{r eval=require('leaflet'),tidy=FALSE, echo = FALSE, fig.dim=c(16,6)}
+BA_Facet
+
+```
+-  Agricultural fires occur across almost whole France. Some Area seems to be less affected (Alsace, Bourgogne, Alpes, Aquitaine). Is it mainly due to different agricultural practices? (vineyards do not burn much?) OR is there a bias related to the sources/research method or is there a regional difference in effort to publicize these fire events?
+- Pastoral fires mainly occur in Pyrenean regions, Mediterranean regions and Massif Central
+<!-- --- -->
+<!-- # Interactive view of dataset - Feel free to zoom and click ! -->
+
+
+<!-- ```{r eval=require('leaflet'),tidy=FALSE, echo = FALSE, fig.dim=c(15,7)} -->
+<!-- mapview(fire_sf, zcol="groups",size=0.5) -->
+
+<!-- ``` -->
+<!-- --- -->
+# Agricultural and pastoral fire dynamics over study period
+
+
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(16,6)}
+show(NbFire_Date_density)
+```
+-  Strong seasonality for each type of fire
+-  2015 and 2019 : Major year of agricultural fire events
+-  2012 and 2019 : Major year of pastoral fire events
+---
+
+# Intra-annual variability
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(16,6)}
+print(MeanNbFire_Month_barplot)
+
+```
+- Intra-annual patterns of fire events
+- Agricultural fires mainly occurring from June to September, with a pike in July
+- Pastoral fires mainly occurring from February to March
+- Both occurring throughout the year
+
+---
+# Inter- and intra-annual variability
+
+.pull-left[
+
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(8,9),message=FALSE,warning=FALSE}
+print(NbFire.Year_JJMM_density) 
+
+```
+]
+
+.pull-right[
+- Agricultural fires truely occur around July
+- There seems to be a second period of pastoral fire events from September to October, in particular for certain years (2007,2016,2018)
+- No trend or shifting in seasonality across the years
+]
+
+---
+# Some municipalties are intensively affected
+These municipalities are affected more than once every two years by fire events
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(16,8)}
+print(City_Nb_barplot)
+
+```
+---
+class: inverse, center, middle
+
+# Burned area
+
+---
+# Burned area distribution
+
+.pull-left[
+
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(8,8),message=FALSE,warning=FALSE}
+print(BA_Group_jitterplot) 
+
+```
+]
+
+.pull-right[
+- Few extreme events = fire > 500ha, potentially linked to forest fire :
+  - 4 Agricultural fires
+  - 10 Pastoral fires
+]
+
+---
+# Burned area across France
+
+
+```{r tidy=FALSE, echo = FALSE, warning=FALSE,fig.dim=c(16,8)}
+show(BA_Group_bubblemap)
+```
+---
+class: inverse, center, middle
+
+# Vegetation type
+
+---
+# Current vegetation type classification
+.pull-left[
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(8,9)}
+print(VegetType_Nb_barplot)
+```
+]
+.pull-right[
+```{r tidy=FALSE, echo = FALSE, fig.dim=c(8,9)}
+print(Words_Nb_barplot)
+```
+]
+---
+# A need of a new classification
+
+Vegetation type database is really accurate but does not allow any analysis without grouping.
+
+Suggestion from JMO :
+ - Remove any mixed fire (agricultural/pastoral fire with forest fire) -> already in Prométhée
+ 
+ - Separate vegetation type into :
+   - Crop residue fires : stubble, straw (chaume, paille)
+   
+   - Crop fires : wheat, barley, harvest, hay oats, cereals etc. (blé, orge, récolte, avoine foin, céréale)
+   
+---
+# What are the next steps ?
+
+- Discuss and implement a new vegetation type classification
+- Discuss how to convert current database to Carbon emissions. Simple systematic conversion to C ? Depending on vegetation type ? Depending on period of the year ? -> What data do we need ?
+- Create a model to predict missing data of burned area and burned mass of storage building.
+- Analyse data by department or agricultural region
+- Discuss our goals : 
+  - Describe agricultural and pastoral dynamics in France
+  - Assess Carbon footprint of agricultural and pastoral fire events
+  - Depict spatial and temporal variability of fire dynamics and Carbon footprint
+  - Compare JMO method/database with other method/database ? Which one ?
+  - Others/Suggestion ?
+  
+---
+
+
+
+
