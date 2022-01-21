@@ -37,7 +37,7 @@ library(pilot)
 library(ggdist)
 library(inspectdf)
 library(ggforce)
-
+library(report)
 
 ```
 
@@ -291,6 +291,8 @@ fire_sf <- st_as_sf(fire,
 1.  Graphic exploration
 
 ```{r}
+fire%>%
+  report()->Data_report
 fire%>%
   inspect_na()%>%
   show_plot()+
