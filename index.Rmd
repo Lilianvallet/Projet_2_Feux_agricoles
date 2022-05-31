@@ -6,13 +6,13 @@ date: "`r Sys.Date()`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["scripts/JDD_files/css/rutgers-tidyverse.css","scripts/JDD_files/css/rutgers-fonts_og.css"]
+    css: ["css/rutgers-tidyverse.css","css/rutgers-fonts_og.css"]
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
       ratio: "16:9"
-      beforeInit: "scripts/JDD_files/css/macro.js"
+      beforeInit: "css/macro.js"
 ---
 
 
