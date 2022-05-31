@@ -41,6 +41,7 @@ knitr::opts_chunk$set(fig.align = "center",
 
 ![](scripts/JDD_files/figure-html/Agroecosystem_2.png)
 
+
 --
 
 -> Specific fire regime : Seasonality, Burned area, Fire behavior and Prescription 
