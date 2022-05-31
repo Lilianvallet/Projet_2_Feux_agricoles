@@ -5,7 +5,8 @@ data/toutes_communes_cog_2021.csv
 data/code-insee.csv
 data/contour_commune_2021/
 data/Atlas/
-report/
+/FarEarth.mp4
+/MODIS_sattelite.mp4
 # History files
 .Rhistory
 .Rapp.history
