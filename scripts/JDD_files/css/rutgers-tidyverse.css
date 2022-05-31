@@ -114,21 +114,9 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 
 /* Add image and change bg color */
 .title-slide {
-<<<<<<< HEAD
   background-image: url("../../JDD_files/figure-html/Logo.png");
   background-position: 50% 5%;
   background-size: 800px;
-=======
-<<<<<<< HEAD
-  background-image: url("../../scripts/JDD_files/figure-html/Logo.png");
-  background-position: 50% 5%;
-  background-size: 800px;
-=======
-  background-image: url("../../scripts/JDD_files/figure-html/Logos.jpg");
-  background-position: 13% 35%;
-  background-size: 95px;
->>>>>>> 14b705dfa3d489984c66a906605a256d050d9357
->>>>>>> bf4869150394468f625cf5fb02315fdf84ef947b
   background-color: #fff;
   padding-left: 100px;  /* delete this for 4:3 aspect ratio */
 }
@@ -138,11 +126,7 @@ thead, tfoot, tr:nth-child(even) { background: none; }
   color: #515151;
   padding-top: 250px;
   font-weight: normal;
-<<<<<<< HEAD
   font-size: 60px;
-=======
-  font-size: 45px;
->>>>>>> 14b705dfa3d489984c66a906605a256d050d9357
   line-height: 0.05;
   text-align: left;
   text-shadow: none;
