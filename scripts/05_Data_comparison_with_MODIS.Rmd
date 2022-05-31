@@ -133,6 +133,7 @@ MODIS%>%
   geom_sf()+
   theme_pilot()+
   scale_fill_viridis_c(option = "D")
+<<<<<<< HEAD
 for (yy in 2012:2021){
 VIIRS_NPP%>%
   filter(year(ACQ_DATE)==yy)%>%
@@ -149,6 +150,9 @@ plot_name<-paste0("VIIRS_",yy,".png")
 print(paste("Saving",paste0("/scripts/JDD_files/figure-html/",plot_name)))
 ggsave(plot = VIIRS_plot,paste0("scripts/JDD_files/figure-html/",plot_name))
   }
+=======
+
+>>>>>>> 14b705dfa3d489984c66a906605a256d050d9357
 ```
 
 
