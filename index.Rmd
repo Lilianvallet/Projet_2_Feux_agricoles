@@ -3,6 +3,7 @@ title: "PhD Day 2022"
 subtitle: "Agricultural fires in France : a first national overview from data mining"
 author: "Lilian VALLET"
 date: "`r Sys.Date()`"
+seal: false
 output:
   xaringan::moon_reader:
     lib_dir: libs
