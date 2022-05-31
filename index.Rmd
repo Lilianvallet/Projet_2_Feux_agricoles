@@ -23,7 +23,6 @@ knitr::opts_chunk$set(fig.align = "center",
                       warning = FALSE, 
                       paged.print = FALSE)
 
-
 ```
 
 # Model study
@@ -73,7 +72,7 @@ class: center
 # Sattelite sensor
 
 .left-column[<video data-autoplay width="650" controls autoplay>
-  <source src="scripts/JDD_files/figure-html/MODIS_compressed.mp4" type="video/mp4">
+  <source src="scripts/JDD_files/figure-html/MODIS_sattelite_compressed.mp4" type="video/mp4">
 </video>]
 
 .right-column[<video data-autoplay width="650" controls autoplay>
