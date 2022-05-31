@@ -114,21 +114,9 @@ thead, tfoot, tr:nth-child(even) { background: none; }
 
 /* Add image and change bg color */
 .title-slide {
-<<<<<<< HEAD
   background-image: url("../../JDD_files/figure-html/Logo.png");
   background-position: 50% 5%;
   background-size: 800px;
-=======
-<<<<<<< HEAD
-  background-image: url("../../scripts/JDD_files/figure-html/Logo.png");
-  background-position: 50% 5%;
-  background-size: 800px;
-=======
-  background-image: url("../../scripts/JDD_files/figure-html/Logos.jpg");
-  background-position: 13% 35%;
-  background-size: 95px;
->>>>>>> 14b705dfa3d489984c66a906605a256d050d9357
->>>>>>> bf4869150394468f625cf5fb02315fdf84ef947b
   background-color: #fff;
   padding-left: 100px;  /* delete this for 4:3 aspect ratio */
 }
