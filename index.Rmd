@@ -3,17 +3,16 @@ title: "PhD Day 2022"
 subtitle: "Agricultural fires in France : a first national overview from data mining"
 author: "Lilian VALLET"
 date: "`r Sys.Date()`"
-seal: false
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["css/rutgers-tidyverse.css","css/rutgers-fonts_og.css"]
+    css: ["scripts/JDD_files/css/rutgers-tidyverse.css","scripts/JDD_files/css/rutgers-fonts_og.css"]
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
       ratio: "16:9"
-      beforeInit: "css/macro.js"
+      beforeInit: "scripts/JDD_files/css/macro.js"
 ---
 
 
