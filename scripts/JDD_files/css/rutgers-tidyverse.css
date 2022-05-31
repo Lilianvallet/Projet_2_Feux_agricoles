@@ -126,7 +126,15 @@ thead, tfoot, tr:nth-child(even) { background: none; }
   color: #515151;
   padding-top: 250px;
   font-weight: normal;
+<<<<<<< HEAD
   font-size: 60px;
+=======
+<<<<<<< HEAD
+  font-size: 60px;
+=======
+  font-size: 45px;
+>>>>>>> 14b705dfa3d489984c66a906605a256d050d9357
+>>>>>>> 46eb979c63122932dd8b755324d08e2672f60132
   line-height: 0.05;
   text-align: left;
   text-shadow: none;
